@@ -1641,8 +1641,9 @@ function applyScale() {
   UK = k < 0.999 ? k : 1;
   r.classList.toggle('sc', UK < 1);
   r.style.setProperty('--k', UK);
-  r.style.setProperty('--vh', UK < 1 ? (1 / UK) + 'vh' : '1vh');
-  r.style.setProperty('--vw', UK < 1 ? (1 / UK) + 'vw' : '1vw');
+  // unidades basadas en el tamaño visible real (en móviles 100vh incluye la barra del navegador y el contenido no cabía)
+  r.style.setProperty('--vh', (window.innerHeight / 100 / UK) + 'px');
+  r.style.setProperty('--vw', (window.innerWidth / 100 / UK) + 'px');
 }
 applyScale();
 function resize() {

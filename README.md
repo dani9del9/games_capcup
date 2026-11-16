@@ -296,3 +296,4 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Botones CONTINUAR y SALTAR tras un gol/repetición con fondo de color (antes transparentes).
 - Barrera roja de portería: el balón (sobre todo el pequeño y rápido) ya no puede atravesarla ni colarse como gol.
 - Móviles: al abrir el juego sale un aviso para activar la pantalla completa (fullscreen.js); en iPhone explica cómo añadirlo a la pantalla de inicio.
+- Móviles: la interfaz usa el tamaño visible real (no 100vh), la tienda hace scroll completo con la barra inferior sólida y las cartas tienen más alto para que quepa el texto.

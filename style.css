@@ -806,11 +806,13 @@ html.sc body{width:calc(100 * var(--vw));height:calc(100 * var(--vh));transform:
 html.sc .screen{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .touch-only{display:none}@media (pointer:coarse){.mouse-only{display:none}.touch-only{display:inline}}
 html.sc .mrow{grid-template-rows:none!important;grid-auto-rows:auto!important;flex:none!important}
-html.sc .mrow .card{min-height:118px}
+html.sc .mrow .card{min-height:150px}
 html.sc .mrow .card .cd-desc{overflow:visible}
-html.sc .screen.shop{gap:8px}
+html.sc .screen.shop{gap:8px;padding-bottom:0}
+html.sc .mtab,html.sc .mbot{flex:none!important;min-height:auto;height:auto}
+html.sc .mbot{padding-bottom:6px}
 html.sc .screen>*{flex-shrink:0}
-html.sc .screen.shop .s-foot{position:sticky;bottom:0;background:linear-gradient(180deg,transparent,rgba(7,11,16,.95) 40%);padding:6px 0 2px;z-index:5}
+html.sc .screen.shop .s-foot{position:sticky;bottom:0;background:rgba(7,11,16,.97);border-top:1px solid rgba(255,255,255,.14);padding:8px 8px 6px;z-index:5;width:100%;box-sizing:border-box}
 .langs{margin-top:8px;gap:6px}
 .btn.lang{opacity:.7}
 .btn.lang.on{opacity:1;outline:2px solid #ffd54a}
