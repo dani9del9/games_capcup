@@ -295,3 +295,4 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Tienda en pleno partido: los comodines ya usados desaparecen de tu lista (se gastan al usarlos).
 - Botones CONTINUAR y SALTAR tras un gol/repetición con fondo de color (antes transparentes).
 - Barrera roja de portería: el balón (sobre todo el pequeño y rápido) ya no puede atravesarla ni colarse como gol.
+- Móviles: al abrir el juego sale un aviso para activar la pantalla completa (fullscreen.js); en iPhone explica cómo añadirlo a la pantalla de inicio.
