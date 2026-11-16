@@ -1,0 +1,297 @@
+# CHAPAS 8
+
+Juego de chapas de fútbol (roguelike) en JavaScript + HTML5. Abre `index.html` con doble clic. No necesita servidor ni internet.
+
+## Modos
+- **TORNEO**: roguelike, una derrota y fuera. Tienda entre partidos.
+- **AMISTOSO**: CPU o J2, eliges equipos, formación, campo, balón y nº de balones. Botón **🎲 3 comodines aleatorios por equipo** (si no lo activas, sin comodines).
+- **PENALTIS**: tanda de 5 penaltis cada uno (muerte súbita si hay empate), contra la CPU o J2.
+
+## Novedades de la versión 8
+- Flecha de visión: la roja (la chapa) se ve siempre hasta el balón; la visión solo alarga la blanca (el balón), con un mínimo.
+- Tras un gol saca el equipo que lo encajó. Gol en propia: no gasta turno y saca el que se lo marcó.
+- Es falta si solo toca el balón un rival; los pases a compañeros que acaban tocando el balón valen como relevo.
+- 5 selecciones nuevas: Escocia, Ucrania, Camerún, Perú y Australia.
+- Repetición en sepia al 50%. Cartel de inicio grande y el resto de info pequeña.
+- Penaltis: flecha mucho más rápida y zona verde según la precisión del tirador.
+- Carta nueva: Portero a casa. Más mejoras de estadística en la tienda.
+- Césped con 7 diseños de dibujo y 6 colores, al azar en cada partido.
+- Debug: dinero infinito y botón 🛠 GANAR (también en la pausa).
+
+## Novedades de la versión 7
+- Barra de penalti más pequeña y el resto de chapas se colocan alrededor del área como espectadoras.
+- La flecha de visión de juego es más corta por debajo de 9-10 de VIS.
+- Habilidad **Gran Capitán**: +2 a todas las estadísticas de su equipo en las 3 primeras rondas del torneo.
+- Carta **Superestrella**: la chapa brilla y sus tiros acaban en gol dispare donde dispare (2 / 4 / todos los tiros según nivel).
+- Pelotas **3D** (salta por encima de las chapas en cada tiro) y **venenosa** (envenena una vez a cada chapa que toca: -2 a todo).
+- **Reiniciar partido** en el menú de pausa. La tanda de penaltis es un check dentro de Amistoso.
+- Carteles de inicio en blanco.
+- **Repetición** tras cada gol (desde que se dispara hasta el gol).
+
+## Novedades de la versión 6
+- **Tiros iguales**: los puntos junto al marcador son los tiros normales de cada equipo y siempre son los mismos. Los tiros extra (falta, comodines) no los gastan.
+- **Falta**: si tu tiro no toca el balón, el rival tira 2 veces seguidas. Esto también vale cuando se falla en un tiro extra.
+- **Penaltis**: si tocas a un rival dentro de tu propia área antes de tocar el balón, el rival lanza un penalti. Barra roja con flecha móvil y zona verde (más grande cuanto mejor es el tirador, según Potencia y Precisión). Clic o ESPACIO: en verde es gol, en rojo lo para el portero y el balón sale rebotado.
+- **Formaciones**: cada equipo tiene la suya y la que eliges solo afecta a tu equipo. En el torneo se mantiene de un partido a otro.
+- **Visión de juego** (sustituye al efecto): cuanto más alta, más lejos llega la flecha de ayuda al arrastrar. Con 10 ves toda la trayectoria de la chapa y del balón; con 0 no ves nada. Habilidad `Ojo de halcón` (+3 VIS).
+- **Mejoras de estadística** en el mercado: +2 Potencia, +2 Peso, +2 Precisión, +2 Visión de juego.
+- **Cartas nuevas**: *Cambio de campo* (cambia el tipo de campo al azar) y *Portería mini* (tu portería a la mitad durante el partido).
+
+## Controles
+Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO o clic detiene la flecha del penalti. Esc abre el menú.
+
+## Archivos
+`index.html`, `style.css`, `engine.js` (física e IA), `cards.js` (cartas), `game.js` (interfaz y reglas).
+
+## Ajustes posteriores
+- El cartel de FALTA ya no se tapa con el de turno.
+- Tienda: 6 artículos (1 reliquia, 1 habilidad, 2 cartas, 2 mejoras) con nombre y descripción visibles.
+- Info de chapa al pasar el ratón más corta y con letra grande; se oculta mientras el balón se mueve.
+- Selección de equipo: ordenar por nivel, formación, mejor jugador o A-Z; al pasar el ratón por las chapas sale la info del jugador.
+- Penalti: el portero del equipo que tira vuelve a su sitio; el penalti cuenta como turno del que lo tira (el siguiente turno es del defensor).
+- Pelota venenosa: solo envenena al primer jugador (que no sea el que tira) con el que choca el balón en cada jugada.
+- La info de jugador explica brevemente cada habilidad.
+- Reliquia nueva: Portero goleador (sus goles valen doble).
+- Torneo: elegir "campo y bola clásicos" o "aleatorios" al empezar.
+- Cartas con color por tipo (mejora verde, reliquia naranja, comodín morado) y rareza: común, rara (borde azul) y épica (borde arcoíris).
+- Pinball: las chapas se separan de los bumpers. Botón de tienda y de comprar rediseñados (el de comprar sin dinero ya no se ve negro).
+
+## Cambios recientes (en esta misma versión)
+- Hover de botones sin saltos de color (solo brillo/elevación suave).
+- Precisión: abanico semitransparente junto a la flecha blanca; más ancho cuanta menos precisión.
+- Modo debug: selectores de campo y balón en cualquier momento.
+- Balón saltarín sustituido por balón de hielo; mini más pequeño y gigante más grande.
+- Carteles de pantalla (REBOTE, PASE…) ya no se solapan.
+- Campo de barro: solo tonos marrones, sin círculos.
+- Pausa congela toda la física; carteles pequeños con fondo negro 80% (Bahnschrift); selecciones con estadísticas más realistas; barro/niebla/hielo más limpios.
+- Balón loca arcoíris; chapas MOTIVADAS (estrellitas, Gran Capitán incluido); comodín Motivado.
+- Animación de GOL grande (letras, rayos, flash); sin carteles de rebote tras el gol.
+- Animación de gol simplificada (ligera).
+- Mejora de estadística: al pasar el ratón sobre la chapa se ve un trozo naranja en la barra.
+- Contador de dinero en el HUD del partido; el dinero del gol va en la animación de gol.
+- Sorteo de saque; camisetas alternativas; balón loca se apaga; botón Mercado abajo.
+- MODO LIGA: 10 equipos, 9 jornadas, clasificación y goleadores (league.js).
+- Vestuario con textos más grandes; tabla de goleadores en la liga.
+- Liga: elegir rivales; números de estadística por colores; espera tras el gol más corta.
+- Reliquia Regalo del rival (autogoles x2), comodín Portería abierta, equipo Aguamarina (todo a 1).
+- Precisión 15º máx, tienda en partido x10, comodines CPU, info fuera del campo, moneda, Leirado, Portería abierta sin barrera.
+- Actitud (ACT) + pentágono en vestuario + brillo iridiscente; arcos de área completos; prórroga 3 tiros→penaltis; botón ⌂ MENÚ; selector visual de equipos en amistoso; hover de info siempre; RESUMEN con minutos; carta Tarjeta amarilla.
+- Actitud renombrada a Mentalidad (MEN): solo con mucha mentalidad sube stats (+X con decimal visible), reborde arcoíris.
+- Mentalidad baja (gol en propia / goleada, -X rojo), botón Ver jugadores, botón TIENDA ×10 en partido.
+- Mentalidad 7+: % por característica, máx +1; Leirado MEN 10; portero humano con flecha propia en penaltis.
+- Mentalidad sube con goles (jugador más, equipo poco); RESUMEN más grande con scroll.
+- Estadísticas de equipos por nivel real (TIER): élite 65, grandes 55, buenos 45, resto 35.
+- Arcoíris de mentalidad con alpha según subida total; campo agujero central rediseñado (vórtice).
+- Resumen anota subidas/bajadas de stats (con detalle); agujero central rediseñado (anillos, flechas, ondas hacia el centro).
+- Alpha mínimo del arcoíris 20%.
+- Nuevas selecciones: China, Irlanda, Grecia, Tailandia.
+- Mundial: cuadro (brackets) con todos los partidos + goleadores; banderas junto a los nombres de equipo en la transmisión.
+- Tutorial completo (tutorial.js, 18 pantallas, campo jugable, penaltis, cartas de ejemplo); CPU no saca con el portero; RESUMEN más alto; bandera en subidas/bajadas de stats; mejoras de mentalidad suman máx. 1 por jugador; icono Peso ⚖️.
+- Tutorial: texto autoajustado (sin scroll) y campo jugable optimizado (menor resolución, sin sombras, redibujo bajo demanda, sin blur de fondo).
+- Mundial: 5 rondas (32 equipos), resultados de otros partidos ocultos hasta acabar el tuyo; ruleta de 8 casillas tras cada victoria (5 premios, 2 en blanco, 1 resta dinero).
+- Botón 👕 MI VESTUARIO con el estilo de los demás; cada equipo tiene capitán (mediocentro, brazalete C, +1 Mentalidad).
+- Ruleta integrada en el modal de victoria (más ligera: sin blur ni sombras, capa propia); botones bloqueados hasta girar.
+- Torneo: elegir tiros por equipo y fase de grupos (grupos de 4, pasan 2, eliminatoria desde octavos), clasificaciones, celebración de campeón al ganar la final, comodines de la CPU visibles.
+- Premios de ruleta = cartas GRATIS en la tienda (/bin/bash); animación al aplicar mejora/habilidad a un jugador y vuelta a la tienda; fix de faltas con contacto sin evento; Leirado → LRD.
+- Vestuario: al pasar el ratón por un comodín comprado se ve qué hace.
+- Rebotes: el contador ya no se detiene en 5 (6, 7, 8…) y pasa a morado; el balón pierde el brillo al acabar la jugada.
+- Veneno: la bajada de estadísticas se ve en rojo (−2) junto a cada stat durante ese partido.
+- Ruleta: el premio gratis sustituye una carta de la tienda (mismo nº de cartas). Campos raros 35% (antes 75%) y balones raros 20% (antes 40%).
+- Faltas: el mensaje dice el motivo (tocó a un rival sin tocar el balón / ninguna chapa tocó el balón). Si el rival al que tocas llega a tocar el balón, ya no es falta.
+- Comodín 'Cambio de campo' renombrado a 'Cambio de estadio'. Nuevo comodín 'Cambio de áreas': los equipos intercambian posiciones y porterías (nv2/3: tiros extra).
+- Tras un gol todas las chapas vuelven a su posición inicial (arreglado: un cambio de estadio a pinball dejaba como 'posición inicial' la actual).
+- No se pita falta si el rival ya no tiene turnos (la jugada era la última del partido).
+- Visión de juego y potencia con curva no lineal (1 casi nada, 12 muchísimo, medios intermedios). La barra naranja de mejora continúa la verde sin bordes redondeados en la unión.
+- Nuevos comodines de un uso: Gol doble, Gol triple y Gol invertido (afectan al próximo gol del partido, de quien sea).
+- Reliquias: Tarjeta roja y Ventaja de oro duran 2 partidos y se destruyen. Nueva reliquia Brazalete de capitán (mentalidad 12 siempre).
+- Info de jugador más ancha (la palabra Mentalidad ya no se sale).
+- Veneno: al envenenar a una chapa se actualizan al momento sus estadísticas (ficha y cuadro de info del ratón).
+- Nueva reliquia cara 'Portero guardián' (el portero vuelve a casa tras cada jugada) y nuevo comodín 'Caos total' (todas las chapas a posiciones aleatorias).
+- La ruleta también sale tras perder (eliminación o derrota en grupos).
+- Nombres de jugadores renovados: todos inventados, ya no coinciden con futbolistas reales.
+- Nombres parecidos restaurados (Messina, Mbapé…) con estadísticas según el perfil de cada estrella; España sigue siendo la mejor plantilla.
+- Eliminada la habilidad Pluma. Teletransporte mejorado (tiro ×1.2/×1.5/×1.9). Supertiro: potencia 12 en esa jugada y balón en llamas.
+- Vestuario: el capitán se ve con borde dorado y etiqueta 'CAPITÁN · +1 MEN'.
+- Nuevo 🧪 Laboratorio de jugadores (menú principal): campo con 2 equipos y panel para subir/bajar stats de cada jugador, habilidades, estrellas, dar cualquier comodín, reliquias, balón, campo y nº de balones. Al acabar el partido se ocultan ficha de chapa, mano y tooltip.
+- Nuevo comodín 'Arreón final': tus goles en tus últimos 3/4/5 turnos del partido valen doble.
+- Ruleta: ganando queda igual; empatando (o perdiendo) una casilla de premio pasa a ser NADA.
+- Laboratorio: las estadísticas de cada jugador se cambian con sliders (1 a 12, pasos de ½).
+- Laboratorio: los botones de jugador muestran su dorsal sobre la bandera del equipo.
+- Laboratorio: botones para cambiar el turno de equipo, los comodines van a la mano del turno actual y las reliquias aparecen desplegadas.
+- Laboratorio: siempre empieza el equipo 1 (sin moneda) y al cambiar equipo, balones o rival CPU se mantienen las posiciones de chapas y balones.
+- Laboratorio: sliders coloreados por valor (blanco/amarillo/naranja/rojo/morado) y la mentalidad se recalcula al cambiarla (o con el botón 🎲).
+- Laboratorio: la tarjeta roja quita un rival al activarla y lo devuelve al desactivarla; comodines y reliquias se pueden filtrar y ordenar por rareza.
+- Al pulsar un comodín ya usado se quita de la lista de la mano.
+- Laboratorio: junto a cada estadística se ve en verde la mejora de mentalidad aplicada (+0.4…).
+- Laboratorio: el comodín usado desaparece de la mano al instante y no se pueden añadir comodines que ya tienes.
+- Laboratorio: sin caja de comentarios a la izquierda.
+- Arreglado: el botón Tutorial ya funciona tras entrar en otras opciones y volver al menú.
+- Comodines usados vuelven a poder añadirse en el lab; Superestrella: sus próximos 2/4/todos los goles valen doble; lab: comodines comunes a ambos equipos; mentalidad: mejora total al azar entre 0 y tope (0.5 con MEN 8 … 1 con MEN 12).
+- Mentalidad menor de 2: baja las estadísticas hasta 0.5 en total (al azar).
+- Lab: las bajadas de mentalidad se ven en rojo.
+- Nuevo comodín Presión: baja la mentalidad de todos los jugadores rivales este partido.
+- Lab: sección ITEMS (+2/−2 de cada característica al jugador elegido).
+- Tutorial: explicación bajo cada estadística, clic derecho cancela el arrastre, texto de mentalidad actualizado.
+- Lab: clic en una chapa del campo la selecciona en el panel derecho.
+- Nuevo nombre CAP CUP: portada con césped y logo nuevo.
+- Portada: arreglado el recorte de la P de CUP.
+- Portada: sin selector de ronda; iconos en Torneo y Amistoso.
+- Arreglado error al tirar (superestrella antigua).
+- Peso: la masa crece más rápido a partir de 5 (peso 12 ≈ 3x un peso medio); casi imposible de mover.
+- Habilidades nuevas: Motivado, Teatrero, Piedra, Salud de hierro, GOAT, Araña. Se pueden repetir hasta 3 veces (más copias = más efecto).
+- Quitado el texto GK de los porteros.
+- Comodines nuevos: Cambio de plantilla (N×N al azar), Ladrón (robas un comodín al rival), Apagón (el rival no puede usar comodines 2 turnos).
+- Lab: el comodín usado vuelve a verse disponible en el listado.
+- Lab: la valla inferior dice LABORATORIO DE JUGADORES.
+- Lab: quitados los items de la tienda (ya están los sliders).
+- Lab: sección de habilidades abierta por defecto.
+- Lab: con 3 copias no se quita al pulsar; clic derecho quita una copia.
+- Un clic sin arrastrar solo selecciona la chapa, nunca cuenta como jugada.
+- Lab: máximo 3 habilidades por jugador (antes un cuarto rompía el dibujo de iconos).
+- Araña: al tocar el balón se queda parada el resto de la jugada.
+- Araña: solo se activa cuando el balón ya ha sido tocado en la jugada.
+- Araña: se mueve poco/bastante/mucho tiempo según copias (1/2/3).
+- Mentalidad 11: mejora total siempre +1; mentalidad 12: siempre +2.
+- Ojo de halcón mucho más potente (cada copia reduce a la mitad lo que falta por ver); anuncio grande con bandera cuando el rival usa comodín.
+- Lab: al clicar una chapa el turno pasa a su equipo.
+- Lab: clic derecho + arrastrar mueve una chapa por el campo.
+- GOAT x3: el balón que toca siempre sale hacia la portería rival.
+- Comodín nuevo Elegido GOAT: una chapa de cualquier equipo pasa a ser GOAT el resto del partido.
+- Comodín Pase de oro (goles de pase x2); textos de items/comodines/habilidades más cortos, sin paréntesis explicativos.
+- Lab: la chapa elegida en el panel se marca en el campo.
+- +1 Estrella item en tienda; tutorial ampliado (estrellas, comodines y habilidades nuevas).
+- Comodín Freestyler (gol con 4+ rebotes da dinero); quitada la flecha azul de la chapa elegida en el lab.
+- Elegido GOAT: jugador al azar de cualquier equipo; Presión: mentalidad 1 a todo el rival.
+- Comodines épicos (más caros): triple, gol triple, GOAT, apagón, ladrón, presión, superestrella.
+- Quitado el aro azul de la chapa seleccionada en el lab.
+- Salud de hierro: inmune al hielo (descongela).
+- Falta también si fallas en un tiro extra aunque al rival no le queden tiros; corregido choque de variable en Freestyler.
+- Araña solo va a por el balón jugado (con 2 balones); textos de items/cartas sin 'tu/su' (el/la/los).
+- Quitado comodín Patrocinador (ya existe reliquia Prima de fichaje); nueva reliquia Prima por goleada (+$1 por gol de diferencia al ganar).
+- Tienda: comodines raros y épicos salen menos (x0.45 / x0.18).
+- Araña: solo actúa si el balón está a menos de 3 veces su tamaño.
+- Rejugar torneo/liga manteniendo equipo/dinero/comodines/reliquias; amistoso con slider de dinero y tienda previa (J1 y luego J2); reliquias por equipo en amistoso.
+- Mundial ★: tras ganar el Mundial, REJUGAR sube de nivel (★, ★★…) con rivales más fuertes.
+- Liga ★: ser campeón de liga y rejugar sube el nivel de liga.
+- Tienda: épicos mucho más raros (x0.07), raros x0.35, también en reliquias y habilidades.
+- 4 comodines (Pase letal, Invisibles, Fuera de juego, Penalti injusto); vestuario rival en VS; araña mejorada; épicos aún más raros en manos y tienda.
+- Tienda en partido x2; reliquias Bolsillo extra (+1 hueco comodín) y  (comodines a mitad); Portería mini dura 3 turnos; comodín Soborno; la CPU usa todos los comodines.
+- Teatrero pasa de habilidad a comodín (3/4/6 jugadas del rival); los comodines usados con efecto pendiente quedan en gris abajo y desaparecen al cumplirse.
+- Araña: ahora vigila el balón en todo momento (radio 3 veces su tamaño) y reacciona cuando pasa cerca, no solo al instante del toque.
+- Cartel de comodín rival más pequeño, arriba y ligero (1,8 s); la CPU ya no espera a que desaparezca para tirar.
+- Tienda sin x10 (aviso de precio doble); vestuario rival desde el menú de pausa; iconos de comodines rivales más grandes; comodines Aforo completo (dinero x2/2,5/3) y Junta de accionistas (+$20/30/40).
+- Guantes: el portero atrae el balón como 3 imanes (ya no crece); nueva reliquia Multiportero (+30% a la chapa más cercana a tu portería, recalculada cada turno).
+- Rendimiento: sin desenfoques/backdrop-filter ni animación arcoíris continua, brillos de fondo ligeros y canvas con límite de píxeles.
+- Equipos: +1 a todas las estadísticas (menos Leirado) y cada equipo tiene al menos un jugador de media 6.
+- Bola de fuego (Pase letal / 3 GOAT) se para al chocar con un rival; comodines del rival más legibles (gris al usarse, con descripción).
+- Comodín Césped alto: en tu área el balón se frena muchísimo (3/5/8 jugadas).
+- Equipos: cada equipo (salvo Leirado) tiene al menos una chapa de 2 estrellas y una con habilidad.
+- Campos y balones especiales más probables (55% / 40% desde la 2ª ronda).
+- En partido se ven las reliquias de ambos equipos (rival con borde rojo); Guantes: 'El portero atrae el balón' y solo actúa en las jugadas del rival.
+- Reliquias en partido: tooltip grande al pasar el ratón con nombre, descripción y a qué equipo pertenece.
+- Reliquia Sangre fría: todos tus penaltis son gol aunque falles la zona verde.
+- Pase letal -> Pase de la muerte (calavera, 3 turnos); Césped alto 3 turnos; comodines con duración se quedan en gris con los turnos restantes en grande.
+- Laboratorio: modal al pasar el ratón por reliquias y habilidades.
+- Textos: «chapa(s)» pasa a «jugador(es)» en todo el juego.
+- Nombres menos evidentes; comodín «Rival desordenado»; nuevo diseño del balón 3D; balón Invisible; campo Caótico (mitades distintas, cambian cada 3 jugadas); opción de 3 turnos por equipo («tiros» → «turnos»).
+- Elegido GOAT: 70% de que le toque a un jugador de quien usa el comodín y 30% al rival.
+- Balón invisible: también oculta brillos y estelas.
+- Balón invisible: diseño propio (bola fantasma violeta con aro y carita).
+- Teatrero pasa de comodín a reliquia (siempre activa: si un rival te golpea antes de tocar el balón, falta a tu favor). Barra de mejora de característica más rápida. Animación de estrella nueva al subir un jugador. Calidad adaptativa: si el equipo va justo, baja resolución y quita desenfoques.
+- Modal de plantilla: flechas ◀ ▶ para pasar a las demás plantillas de la liga.
+- Jugadores de todos los equipos con perfil propio (stats distintas por jugador, fijas por equipo y posición).
+- Selección de equipo: las 5 características con la media del equipo (mismos colores que un jugador).
+- Selección de equipo: botón «Vestuario» junto a los jugadores y camisetas local/visitante junto a la bandera.
+- Selección de equipo más despejada (sin descripción ni formación, bandera menor); nombres de la plantilla sin saltos de línea.
+- Selección de equipo: panel de info a toda la altura, más grande y con separador claro entre info del equipo y opciones del torneo.
+- Selección de equipo: más aire en las opciones del torneo.
+- Selección de equipo: opciones del torneo más arriba, menos hueco con la info.
+- Selección de equipo: ajuste automático para que nunca se salga de la pantalla (probado de 520 a 1200 px de alto).
+- Eliminadas las pestañas de ligas de clubes: solo selecciones.
+- 5 selecciones nuevas (Canadá, Costa de Marfil, Hungría, San Marino, Paraguay). Juego adaptado a móviles: pantalla táctil, escalado automático en pantallas bajas, aviso para girar el móvil a horizontal, tienda con scroll.
+- Cambio de áreas: los jugadores se intercambian de campo pero las porterías ya no cambian de sitio.
+- Viento a favor dura 3/4/5 turnos, Visor láser +40% (antes 60%), Junta de accionistas da $50/60/70.
+- Nuevo comodín común «Lesión»: un jugador propio se lesiona (partido con uno menos) y el premio del partido se multiplica por 3; la CPU no lo usa.
+- Pantalla previa al partido: nuevo botón «🛒 TIENDA» que abre el mercado y cartas antes de jugar.
+- Dinero inicial de la partida: $15 (antes $8).
+- Rebajas ahora rebaja TODO en la tienda (reliquias, habilidades, mejoras, comodines, estrellas y subidas de nivel) y los precios se actualizan al comprarla; no se repiten reliquias en la tienda (ni las de la ruleta); quitado el hover de los comodines del rival.
+- Ruleta: no aparece al perder; casillas de NADA: 1 al ganar y 2 al empatar (antes 2 y 3). La casilla sobrante pasa a Comodín.
+- Nuevo comodín «Marrullero» (precio 8): durante 3/5/toda la partida, los goles marcados empujando a un rival (choque entre un jugador tuyo y uno rival durante la jugada) valen doble.
+- Campo caótico: cada mitad mantiene su tipo todo el partido (ya no se resortea cada 3 jugadas). Los comodines con duración (portero a casa, viento, portería abierta, silbato, invertir, perdón, amarilla, congelación, arreón, gol de oro) quedan en gris con los turnos restantes. Descripciones de comodines, reliquias, habilidades, campos, balones y mejoras reescritas en tono más serio y sin palabras repetidas.
+- Idiomas: selector Español / English / Galego en la portada (se recuerda). Traduce todos los textos (menús, tienda, HUD, canvas, tutorial, avisos). Archivos nuevos: i18n.js, lang-en.js, lang-gl.js.
+- Banderas de Canadá y Marruecos rediseñadas. Ruleta: 1 casilla NADA al ganar y 2 al empatar (el escritorio tenía league.js, cards.js y engine.js desactualizados; resincronizados).
+- Icono de la habilidad Piedra cambiado a círculo blanco (⚪).
+- Piedra con 3 niveles: 1 copia se mueve poco, 2 muy poco, 3 inamovible.
+- Nueva reliquia «Seguro de autogoles» (precio 9): los goles en propia puerta no cuentan en los 5 primeros turnos de cada partido.
+- Cuando la CPU usa un comodín aparece un modal con botón ACEPTAR (o Enter/Espacio); el juego espera hasta que el jugador lo pulsa.
+- Penaltis: tira primero quien salga en la moneda; REVANCHA y reiniciar en una tanda de penaltis vuelven a empezar penaltis (antes abrían un amistoso normal).
+- Leirado: todos sus jugadores llevan Araña x3 (el vestuario muestra los 3 huecos).
+- Eliminados todos los equipos de club y las ligas: solo quedan selecciones.
+- Laboratorio: el selector de equipos solo lista selecciones.
+- Ruleta con casillas en orden aleatorio; aviso de falta siempre rojo; animación GOL más corta (¡GOOL!); Aforo completo y Junta de accionistas pasan a ser reliquias de uso instantáneo (no ocupan hueco).
+- Freestyler pasa a ser reliquia (siempre activa): gol con más de 4 rebotes = $1 por cada rebote extra.
+- Ruleta en pleno partido: botón 🎡 en tu turno, apuesta $1-$5, 8 casillas (dinero, comodín, reliquia, mejora, habilidad, NADA), más apuesta = mejores premios y menos NADA; premio gratis en la tienda, se puede vender para hacer hueco; explicada en el tutorial. Las cartas ya se pueden vender en pleno partido.
+- El vestuario nunca muestra más de 6 cartas: al añadir un premio se elimina la primera.
+- Más margen entre los botones TIENDA y RULETA.
+- Botón RULETA con más separación de TIENDA; el dinero que tienes se ve grande dentro de la ruleta.
+- Bandera de Croacia rediseñada (escudo de cuadros limpio con corona).
+- Los premios de la ruleta aparecen como primera carta del vestuario (si hay más de 6 se elimina la última).
+- Volver al partido desde la tienda va directo al partido (sin modal de pausa).
+- Texto del premio de la ruleta de partido centrado con el botón TIRAR.
+- Cuando hay penalti sale un modal con la bandera y botón ACEPTAR (como el de los comodines del rival); la flecha no arranca hasta aceptar.
+- Celebración de gol: ¡GOOOL! (3 oes).
+- Comodines del rival: solo icono (bajo los botones de tienda y ruleta), el modal explicativo sale al pasar el ratón.
+- Ruleta en partido: cada tirada extra sube $1 el rango de apuesta (1–5, 2–6, 3–7…); tutorial actualizado.
+- Ruleta: modal de tamaño fijo, botón 'Volver a la ruleta' en la tienda al venir de ella; botones del mismo grupo con colores distintos (tienda dorado, cuadro/clasificación morado, reiniciar rojo).
+- Bandera de Croacia: escudo rediseñado (escudo con tablero 5×5 y corona de 5 escudetes).
+- Ruleta: columna de controles de tamaño fijo (no salta entre tiradas) y el dinero se actualiza al instante al tirar.
+- Saque: la barra rojiza de las porterías aguanta un solo golpe del balón (desaparece al tocarla); tras la primera jugada se desactivan las dos. Explicado en el tutorial.
+- Nuevos comodines Ceguera (rival sin flecha 3-5 turnos), Desmotivación (rivales −1/−2/−3 en todo) e Intoxicados (envenena a todo el rival); veneno ahora = sin puntería (±90°) y se nota en el abanico; nuevo campo Playa (arena + sombrillas que tapan). Tutorial y traducciones actualizados.
+- Comodín Puerta cerrada (portería bloqueada 2-4 turnos); botón SIMULAR en el cuadro al quedar eliminado (resultados y goleadores del resto del torneo); el botón 'volver a la ruleta' de la tienda aparece siempre que hayas abierto la ruleta hasta tirar al balón.
+- Eliminado el campo caótico (también del laboratorio; Playa disponible en el lab). Nuevo balón Padre: al golpearlo se divide en 3 balones más pequeños (también padres), máx. 12; tras gol vuelve a haber solo los iniciales.
+- Playa: la arena frena un poco (menos que el barro) y cada 3 jugadas una gaviota se lleva el balón al centro; código del campo caótico eliminado.
+- Eliminado el balón Padre (también del lab); sombrillas de la playa ahora octogonales.
+- Barra roja del saque: al romperse suena y se deshace en trozos con chispas. Nuevo campo JURÁSICO: selva con helechos, huellas y fósiles; cada 2 jugadas aparece la huella marcada de un T-Rex y en la siguiente jugada la pisa y lanza todo lo cercano.
+- Balón Invisible renombrado a Balón Fantasma, con diseño nuevo de fantasma (sábana con ondas, ojos y boca).
+- Balón Fantasma: sin estela ni brillos ni textos de rebote que delaten su posición mientras se mueve.
+- Blindaje tras gol: aviso "PORTERÍAS BLINDADAS" al sacar, barras rojas más gruesas y el panel RESUMEN se atenúa mientras hay barras para que no tape la de la izquierda.
+- Blindaje: las barras del saque duran solo la primera jugada (o hasta que el balón las rompa) y se mantienen visibles durante todo ese turno.
+- Barras de portería: la previsión de tiro (al arrastrar) rompía las barras de verdad; ahora simula con copia. Las barras duran solo la primera jugada o hasta que el balón las rompe, también en el laboratorio.
+- Dinero por partido: victoria $5, empate $3, +$1 por gol, +$1 por gol de diferencia, +$1 por jugador con 3+ goles, +$1 sin faltas, más combos/rebotes; luego reliquias y multiplicadores. Nueva reliquia 💸 Doble paga (×2). Resultados con el dinero grande y desglose al pasar el ratón.
+- Ruleta de partido: el dinero ganado en el partido se puede gastar (pasa a la cartera al abrir la ruleta o la tienda); el premio ya no dice cuál es, solo que se busque gratis en la tienda, y el botón COGER PREMIO no se pierde.
+- Teatrero: si el rival golpea a un jugador tuyo antes de tocar el balón, la falta se pita al instante (pitido y aviso "TEATRO"), se corta la jugada y no puede acabar en gol; sacas tú con 2 tiros.
+- Portero guardián: ahora funciona también si se compra en la tienda en pleno partido y el portero vuelve a casa tras los tiros extra.
+- Botones: el borde, la sombra y el brillo coinciden con el color de cada botón (el rojo de REINICIAR PARTIDO tenía sombra verde; también en los estados al pulsar).
+- Ruleta de partido: premios sin descripción de la carta (también la estrella) y el botón COGER PREMIO siempre visible en pantallas bajas.
+- Viento a favor: ahora sopla a favor del equipo que lo activa (antes siempre hacia la derecha), se muestra la animación de flechas y un aviso al activarlo, y respeta el campo inclinado.
+- Habilidades de los jugadores: ahora se venden (botón dorado +$N en cada habilidad, la mitad de su precio) para poder cambiarlas por otras.
+- Cada portería muestra una banderita de su equipo encima de la portería.
+- Dos campos nuevos: 🦄 Ensueño (césped rosa con brillitos y porterías que suben y bajan despacio) y 🌑 A oscuras (todo oscuro; solo el balón y las porterías brillan).
+- Campo «A oscuras» (antes Oscuro): al golpear el balón una esquina de la portería o a un jugador, se ilumina medio segundo.
+- Red de seguridad de la CPU: si le toca jugar y no tira en 4 segundos (por ejemplo tras un comodín), reintenta su turno y, si vuelve a fallar, tira sola.
+- Campo nuevo 🌧️ Lluvioso (lluvia ligera y 3 charcos pequeños: el balón se moja y se frena un poco) y gaviota de la playa rediseñada (vista desde arriba, alas que baten, puntas negras, pico amarillo y patitas).
+- Los charcos frenan muchísimo el balón (solo un disparo muy potente los cruza) y las sombrillas de la playa llevan los colores de la bandera de cada equipo.
+- Campo lluvioso: 4 charcos, 2 por mitad, con tamaños equivalentes (uno grande y uno pequeño en cada mitad).
+- La partida (torneo/liga) se guarda sola entre partidos y al cerrar el navegador; en la portada sale el botón ▶ CONTINUAR solo si hay partida guardada (se borra al perder o acabar).
+- Ceguera arreglada: con ella el rival ya no ve ni trayectoria ni flechita al apuntar, y la descripción dice que todos los jugadores del equipo contrario pierden toda la visión de juego durante N turnos.
+- Items de jugador: Ojo de halcón → Instinto goleador, Explosivo eliminado, Motivado rehecho (stat al máximo cada turno) y 3 nuevos: Aliento helado, Tiro con efecto y Control de balón.
+- Fuera de juego anula solo el primer gol del rival; el penalti solo se pita si se toca a un rival en el área y al acabar la jugada nadie ha tocado el balón.
+- Eliminados Aliento helado y Tiro con efecto; se queda Control de balón.
+- Laboratorio: se puede arrastrar el balón (clic izquierdo, o derecho como con los jugadores) para colocarlo donde quieras.
+- Penaltis revisados: solo si se toca a un rival en el área y el balón no se mueve en toda la jugada; el aviso indica el motivo; el penalti ya no se queda bloqueado si el aviso desaparece.
+- Control de balón rehecho: siempre para el balón en seco; con 1 copia el jugador se mueve con el golpe, con 2 a la mitad de fuerza y con 3 no se mueve.
+- Laboratorio: nuevo botón «↩ Repetir tiro»: tras un tiro (o comodín) devuelve a todos los jugadores y al balón a las posiciones exactas de justo antes, para probar otra combinación de comodines/cartas.
+- Comodines de la CPU: el efecto (terremoto y todos) se aplica al pulsar ACEPTAR en el aviso, sin esperas ni bloqueos; eliminada la carta Onda expansiva.
+- Eliminado el comodín Supertiro. Nueva reliquia ⚡ Reflejos: la CPU espera unos segundos antes de tirar y puedes usar tus comodines en su turno.
+- Control de balón: también para el balón cuando viene de una jugada propia (solo se exceptúa el golpe inicial del tirador); con 3 copias el jugador se queda quieto del todo.
+- Penalti: al pitarse sale VER REPETICIÓN / CONTINUAR (como en un gol) antes del lanzamiento; el penalti solo se pita si el contacto Y el jugador derribado están dentro del área.
+- Final de partido: mensaje 🏁 FINAL con el marcador y doble pitido del árbitro antes de mostrar el resultado.
+- Comodín «Caos total» → «Intercambio total»: los dos equipos intercambian sus posiciones exactas (portero con portero, resto ordenados por altura).
+- Las cartas ya no tienen niveles: siempre nivel base, sin botón de mejora; comprar una carta repetida añade otra copia (si hay hueco). Partidas guardadas se normalizan.
+- Penalti: el botón VER REPETICIÓN está ahora dentro del aviso del penalti (junto a ACEPTAR); tras verla vuelve el aviso.
+- Ayudas de tiro (flechas): con varios balones solo cuentan los choques del jugador que tira (antes un choque entre balones podía robar la referencia); si toca varios a la vez se usa el más cercano a la recta del tiro.
+- Ruleta tras el partido: el dinero actual se muestra en el modal y se actualiza al girar (multiplicar / perder).
+- Falta: un jugador del equipo que tira parado pegado al balón ya no cuenta como «tocar el balón» (antes impedía pitar la falta cuando nadie tocaba la bola).
+- Tienda en pleno partido: los comodines ya usados desaparecen de tu lista (se gastan al usarlos).
+- Botones CONTINUAR y SALTAR tras un gol/repetición con fondo de color (antes transparentes).
+- Barrera roja de portería: el balón (sobre todo el pequeño y rápido) ya no puede atravesarla ni colarse como gol.
