@@ -29,7 +29,7 @@ body:not(.match){background:radial-gradient(1200px 700px at 20% 0%,#16314a 0,tra
 .kicker{font-weight:800;letter-spacing:.3em;font-size:12px;color:var(--cyan)}
 .logo{font:900 clamp(60px,calc(12 * var(--vh)),130px)/1 "Segoe UI Black","Arial Black",Arial;letter-spacing:.04em;background:linear-gradient(180deg,#fff 10%,var(--lime) 60%,#4aa800);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 0 rgba(0,0,0,.45)) drop-shadow(0 0 28px rgba(198,255,61,.35))}
 .sub{font-weight:900;letter-spacing:.7em;font-size:15px;color:var(--gold);margin-top:calc(-1 * var(--vh))}
-#hero{width:min(calc(90 * var(--vw)),820px);height:auto;max-height:calc(28 * var(--vh))}
+#hero{height:min(calc(28 * var(--vh)),calc(min(calc(90 * var(--vw)),820px) * 0.2917));width:auto;max-width:100%;object-fit:contain}   /* mantiene la proporción: las chapas se ven redondas */
 .t-box p{max-width:620px;color:#b9c7d9;font-size:15px;line-height:1.45}
 .dbg{opacity:.5;font-size:12px}.dbg select{background:#111a26;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:3px}
 .best{color:var(--gold);font-size:14px}
