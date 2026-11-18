@@ -301,3 +301,4 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Móvil: comodines de la mano de la partida más pequeños; icono azul ⛶ fijo para volver a pantalla completa mientras no se esté en ella (solo móviles).
 - Móvil: si estás apuntando con un jugador y tocas con un segundo dedo se cancela la puntería (como el clic derecho en PC); pellizco con dos dedos para acercar/alejar y mover el campo (zoom 1x–2.6x).
 - Tutorial: documentados reflejos, comodines tras ACEPTAR, sin niveles, falta/penalti y repetición, multibalón, Intercambio total, FINAL, móvil (2º dedo, zoom), lab Repetir tiro y nuevo paso 'Reglas y detalles del partido'.
+- Tutorial traducido a inglés y gallego (nuevas frases en lang-en.js / lang-gl.js; palabras sueltas ambiguas como 'es', 'son', 'Falta' solo se traducen cuando son el texto completo).

@@ -368,7 +368,7 @@ const TSTEPS = [
       <li class="t-tip">Prueba los dos papeles aquí a la derecha. Sube y baja la precisión para ver cómo cambia el verde.</li></ul>` },
 
   { t: 'Reglas y detalles del partido', ic: '📜', cls: 'wide', body: () => `
-    <div class="t-two"><div><h4>Juego</h4><ul class="t-list">
+    <div class="t-two"><div><h4>Reglas de juego</h4><ul class="t-list">
       <li>🚩 <b>Falta</b>: si el tiro termina sin que nadie toque el balón (ni rival ni tú), o tocas antes a un rival, se pita falta. Dentro del <b>área</b> es <b>penalti</b>; fuera del área, nunca.</li>
       <li>📹 Al pitar un penalti, el aviso incluye el botón <b>Ver repetición</b>.</li>
       <li>⚽ Con <b>varios balones</b>, las flechas de puntería (blanca y roja) toman como referencia el balón <b>más cercano a la línea recta</b> del tiro.</li>
