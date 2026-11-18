@@ -33,7 +33,6 @@ function labRepeat() {
   const w = M.w, ids = new Set(S.bodies.map(b => b.id));
   clearTimeout(M.goalTimer); ['goalbar', 'replaybar', 'cardann'].forEach(i => { const e = document.getElementById(i); if (e) e.remove(); });
   document.querySelectorAll('.overlay:not(#help)').forEach(o => o.remove());
-  if (typeof motivateEnd === 'function') motivateEnd();
   M.seq++; M.over = false; M.pen = null; M.penAward = null; M.penCand = null; M.picking = null; M.drag = null; M.aim = null; M.keepTurn = false; M.free = false; M.extra = [0, 0];
   w.bodies = w.bodies.filter(b => ids.has(b.id)); w.balls = w.balls.filter(b => ids.has(b.id));
   S.bodies.forEach(p => { const b = w.bodies.find(q => q.id === p.id); if (!b) return; b.x = p.x; b.y = p.y; b.vx = b.vy = 0; b.spin = 0; b.shotNow = false; if (b.frozen) { b.frozen = 0; if (b.mOrig) b.m = b.mOrig; } b.airH = null; });
@@ -88,15 +87,20 @@ function labPick(p) {
 /* recalcula el cuerpo de un jugador (stats, tamaño, masa...) conservando su posición */
 function labRebuild(team, i) {
   if (!labOn()) return;
+  // los items de equipo (Gran Capitán…) afectan a los compañeros: se recalcula todo el equipo y se vuelven a aplicar
+  LAB.defs[team].forEach((x, j) => labRebuild1(team, j));
+  applyCaptain(M.w, team);
+  hudCap(); hudScore();
+}
+function labRebuild1(team, i) {
   const def = LAB.defs[team][i]; if (!def) return;
   const cap = M.w.bodies.find(b => b.kind === 'cap' && b.team === team && b.idx === i); if (!cap) return;
   const nb = capBody(def, team, i, Object.assign(labMods(team), { fixAct: LAB.act[team][i], fixGoat: LAB.goat[team][i] }));
   LAB.goat[team][i] = nb.goat;
   LAB.act[team][i] = nb.actB || null;
-  ['r', 'm', 'dec', 'vmax', 'abs', 'st', 'stars', 'dev', 'irid', 'actB', 'captain', 'role', 'name', 'num', 'mot', 'poison', 'psn', 'goat', 'rock'].forEach(k => { cap[k] = nb[k]; });
+  ['r', 'm', 'dec', 'vmax', 'abs', 'st', 'stars', 'dev', 'irid', 'actB', 'captain', 'role', 'name', 'num', 'mot', 'poison', 'psn', 'goat', 'rock', 'ib'].forEach(k => { cap[k] = nb[k]; });
   cap.m0 = cap.m;
   if (team === LAB.side && i === LAB.sel) labBadges();
-  hudCap(); hudScore();
 }
 /* tarjeta roja en vivo: al activarla desaparece un jugador rival (no el portero); al quitarla vuelve a la posición inicial */
 function labRoja(on) {

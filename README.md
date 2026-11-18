@@ -302,3 +302,12 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Móvil: si estás apuntando con un jugador y tocas con un segundo dedo se cancela la puntería (como el clic derecho en PC); pellizco con dos dedos para acercar/alejar y mover el campo (zoom 1x–2.6x).
 - Tutorial: documentados reflejos, comodines tras ACEPTAR, sin niveles, falta/penalti y repetición, multibalón, Intercambio total, FINAL, móvil (2º dedo, zoom), lab Repetir tiro y nuevo paso 'Reglas y detalles del partido'.
 - Tutorial traducido a inglés y gallego (nuevas frases en lang-en.js / lang-gl.js; palabras sueltas ambiguas como 'es', 'son', 'Falta' solo se traducen cuando son el texto completo).
+- Ajuste de estadísticas: Potencia (alcance casi lineal: 1≈300 px, 3≈medio campo, 12≈todo el campo; freno extra por velocidad en los jugadores), Visión (línea blanca de 0 a 600 px máx.), Precisión (desvío máx. ±22° con 1, curva suave), línea roja del jugador hasta donde llega de verdad.
+- Eliminado el modo debug (botón de la portada, selectores de campo/balón y botón GANAR).
+- Visión: con 12 la línea blanca llega a ≈850 px (antes 600).
+- Items: Gran Capitán (compañeros +N en una stat al azar), Cañonero (+30% potencia/copia), Motivado (segunda mitad), Salud de hierro (media/todo/equipo), nuevos Diamante, Demonio, Corazón y Vampiro; fichas muestran 'base +N icono'; eliminada Resbaladiza; items de serie recalculados por equipo; la ⭐ estrella ya no sale en todas las tiendas.
+- Nuevo: 🛠 Crear mi equipo (portada y selección): nombre, 3 letras, colores local/visitante, bandera, formación, jugadores con stats, estrellas e items. Hungría eliminada (partidas guardadas con Hungría se descartan).
+- Editor de equipo rediseñado al estilo del Laboratorio (paneles, sliders de color, chips de items) y botones de portada grandes (Crear mi equipo / Lab de jugadores).
+- Mentalidad: ahora afecta desde 6 (mejora) y por debajo de 5 (pérdida); 5 neutra. Lab: al añadir/quitar items de equipo (Gran Capitán…) se recalcula todo el equipo. Botón Crear mi equipo en rosa.
+- Editor de equipo: rejilla ordenada, chapas con un solo color (local/visitante), bandera con tipo + nº de colores (1-5) y pickers según el nº; clic en la bandera abre el selector de ese color.
+- Vestuario (propio y rival): ya no sale el modal de info al pasar el ratón sobre un jugador.

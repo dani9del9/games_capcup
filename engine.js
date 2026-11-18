@@ -5,7 +5,20 @@
 
 /* desviación (sigma, rad): con PRE 12 = 0; con PRE 1 el balón puede desviarse hasta 15º (2 sigma) */
 const POISON_DEV = Math.PI / 4;   // envenenado: sin puntería (±90° de error con 2σ)
-const devFor = pre => Math.max(0, (12 - Math.min(12, pre)) / 11 * 15 / 2) * Math.PI / 180;
+/* Precisión: desvío (σ) del balón al golpearlo. Pre 12 = exacto; pre 1 = σ 11° (máx. ±22°); curva suave: de 8 a 12 muy fiable */
+const devFor = pre => Math.pow(Math.max(0, (12 - Math.min(12, pre)) / 11), 1.3) * 11 * Math.PI / 180;
+/* Potencia: velocidad de salida del jugador. Los jugadores frenan con rozamiento fijo (dec) + un freno proporcional a la velocidad (CAPDRAG),
+   así el alcance sube casi lineal: pot 1 ≈300 px, pot 3 ≈500 (medio campo), pot 12 ≈1100 (todo el campo) con jugador de peso medio */
+const CAPDRAG = 0.7, REACH_DEC = 366;
+const reachOf = v => v / CAPDRAG - (REACH_DEC / (CAPDRAG * CAPDRAG)) * Math.log(1 + CAPDRAG * v / REACH_DEC);
+const POTV = new Map();
+function potV(p) {
+  p = Math.max(1, Math.min(13, Math.round(p * 10) / 10));
+  if (POTV.has(p)) return POTV.get(p);
+  const R = 300 + 800 * Math.pow((p - 1) / 11, 0.8);
+  let lo = 100, hi = 4000; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (reachOf(m) < R) lo = m; else hi = m; }
+  POTV.set(p, lo); return lo;
+}
 const FIELD = { W: 1000, H: 640, MX: 112, MY: 100, pocket: 70, gw: 190, post: 6, ballR: 13, capR: 26 };
 
 /* ---------- selecciones (banderas en SVG compacto) ---------- */
@@ -55,13 +68,12 @@ const COUNTRIES = {
   THA: { n: 'Tailandia', c1: '#2b3a8c', c2: '#e3262e', bias: { VIS: 1, PRE: 1 }, tag: 'Elefantes de Guerra', svg: '<rect width="30" height="20" fill="#a51931"/><rect y="3.33" width="30" height="13.34" fill="#f4f5f8"/><rect y="6.67" width="30" height="6.66" fill="#2d2a4a"/>' },
   CAN: { n: 'Canadá', c1: '#d52b1e', c2: '#ffffff', bias: { PES: 1, POT: 1 }, tag: 'Los Rojos del Norte', svg: '<rect width="30" height="20" fill="#d52b1e"/><rect x="7.5" width="15" height="20" fill="#fff"/><polygon points="15 3.2 16.2 5.6 17.7 4.9 17.2 8.1 19.5 6.8 19.1 8.6 21.4 9 19.5 10.9 20.2 11.7 15.9 12.6 16.1 14.3 15.4 14.3 15.4 16.2 14.6 16.2 14.6 14.3 13.9 14.3 14.1 12.6 9.8 11.7 10.5 10.9 8.6 9 10.9 8.6 10.5 6.8 12.8 8.1 12.3 4.9 13.8 5.6" fill="#d52b1e"/>' },
   CIV: { n: 'Costa de Marfil', c1: '#f77f00', c2: '#009e60', bias: { POT: 1, PES: 1 }, tag: 'Los Elefantes', svg: V3('#f77f00', '#fff', '#009e60') },
-  HUN: { n: 'Hungría', c1: '#ce2939', c2: '#477050', bias: { PRE: 1, VIS: 1 }, tag: 'Los Magiares', svg: H3('#ce2939', '#fff', '#477050') },
   SMR: { n: 'San Marino', c1: '#5eb6e4', c2: '#ffffff', bias: { MEN: 1 }, tag: 'La Serenísima', svg: '<rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#5eb6e4"/><circle cx="15" cy="10" r="3" fill="#f2c200"/><circle cx="15" cy="10" r="1.6" fill="#2a8a3c"/>' },
   PAR: { n: 'Paraguay', c1: '#d52b1e', c2: '#ffffff', bias: { PES: 1, PRE: 1 }, tag: 'La Albirroja', svg: H3('#d52b1e', '#fff', '#0038a8') + '<circle cx="15" cy="10" r="2.2" fill="none" stroke="#2a8a3c" stroke-width=".6"/>' },
 };
 /* nivel real de cada equipo (ránking FIFA / fuerza de los clubes): +3 élite mundial, +2 gran equipo, +1 muy bueno, 0 resto. Se suma a TODAS las estadísticas */
 const TIER = { ESP: 1, ARG: 3, FRA: 3, ING: 2, BRA: 2, POR: 2, PBA: 2, ALE: 2, BEL: 1, ITA: 1, CRO: 1, MAR: 1, COL: 1, URU: 1,
-  SUI: 0, JPN: 0, SEN: 0, MEX: 0, USA: 0, DIN: 0, NOR: 0, AUT: 0, COR: 0, TUR: 0, UCR: 0, POL: 0, SUE: 0, EGI: 0, NIG: 0, CMR: 0, GHA: 0, CHI: 0, AUS: 0, PER: 0, SCO: 0, CHN: -1, IRL: 0, GRE: 0, THA: -1, CAN: 0, CIV: 0, HUN: 0, PAR: 0, SMR: -2,
+  SUI: 0, JPN: 0, SEN: 0, MEX: 0, USA: 0, DIN: 0, NOR: 0, AUT: 0, COR: 0, TUR: 0, UCR: 0, POL: 0, SUE: 0, EGI: 0, NIG: 0, CMR: 0, GHA: 0, CHI: 0, AUS: 0, PER: 0, SCO: 0, CHN: -1, IRL: 0, GRE: 0, THA: -1, CAN: 0, CIV: 0, PAR: 0, SMR: -2,
   RMA: 3, MCI: 3, PSG: 3, BAR: 1, BAY: 2, LIV: 2, INT: 2, ARS: 2, LEV: 1, ATM: 1, NAP: 1, JUV: 1, MIL: 1, ATA: 1,
   BVB: 0, CHE: 0, RBL: 0, MUN: 0, TOT: 0, ROM: 0, MON: 0, SEV: 0, OLM: 0, LYO: 0, VAL: 0, CEL: 0, LIL: 0, NIC: 0, SGE: 0, VFB: 0 };
 const CODES = Object.keys(COUNTRIES);
@@ -75,11 +87,11 @@ const flagURI = code => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent
 
 /* ---------- roles, estadísticas, habilidades, reliquias ---------- */
 const STATS = {
-  POT: { n: 'Potencia',  icon: '💥', d: 'Velocidad máxima del tiro.' },
+  POT: { n: 'Potencia',  icon: '💥', d: 'Velocidad y alcance del tiro: con 3 el jugador llega a medio campo; con 12, hasta el otro lado.' },
   PES: { n: 'Peso',      icon: '⚖️', d: 'Masa del jugador: empuja más y lo empujan menos.' },
-  PRE: { n: 'Precisión', icon: '🎯', d: 'Si es baja, el balón se desvía al golpearlo. También alarga la guía de apuntado.' },
-  VIS: { n: 'Visión',    icon: '👁️', d: 'Visión de juego: cuánto de la trayectoria ves al apuntar. Con 10 ves TODO el recorrido del balón; con 1, nada.' },
-  MEN: { n: 'Mentalidad', icon: '🔥', d: 'Con mentalidad alta empieza el partido mejorado: hasta +0.5 con 8, siempre +1 con 11 y siempre +2 con 12. Con menos de 2 puede perder hasta 0.5.' },
+  PRE: { n: 'Precisión', icon: '🎯', d: 'Con 12 el balón sale justo hacia donde apunta la línea; con 1 puede desviarse hasta ±22°.' },
+  VIS: { n: 'Visión',    icon: '👁️', d: 'Visión de juego: cuánto de la trayectoria ves al apuntar. Con 12 ves unos 850 px del recorrido del balón; con 1, nada.' },
+  MEN: { n: 'Mentalidad', icon: '🔥', d: 'Con 5 no cambia nada. Con 6 o más puede empezar el partido mejorado: hasta +0.3 con 6, +0.5 con 8, siempre +1 con 11 y siempre +2 con 12. Con menos de 5 puede perder hasta 0.3 (hasta 0.5 con 2 o menos).' },
 };
 const STAT_KEYS = Object.keys(STATS);
 const ROLES = [
@@ -94,20 +106,47 @@ const STAR_BONUS = 1;                 // cada estrella extra suma +1 a todas las
 const abSlots = stars => stars >= 5 ? 3 : stars >= 3 ? 2 : 1;   // más estrellas = más habilidades
 const SHIRT = { POR: 1, DEF: 4, MED: 8, EXT: 7, DEL: 9 };
 const ABILITIES = {
-  capitan:     { n: 'Gran Capitán', icon: '🎖️', price: 12, d: 'El equipo obtiene +2 en todas las estadísticas durante las 3 primeras rondas, y +2 más por cada copia.' },
-  canon:       { n: 'Cañonazo',     icon: '🚀', price: 9, d: 'Los tiros salen un 40% más rápidos.' },
+  capitan:     { n: 'Gran Capitán', icon: '🎖️', price: 12, d: 'Al empezar el partido todos sus compañeros ganan +1 en una estadística al azar (+2 con 2 copias, +3 con 3). Se reinicia en cada partido.' },
+  canon:       { n: 'Cañonero',     icon: '🚀', price: 9, d: '+30% de potencia por cada copia.' },
   bulldozer:   { n: 'Bulldozer',    icon: '🚜', price: 9, d: 'Masa ×1.7: desplaza con facilidad a los demás.' },
   iman:        { n: 'Imán',         icon: '🧲', price: 9, d: 'Atrae el balón cuando está cerca.' },
   gigante:     { n: 'Gigante',      icon: '🗿', price: 8, d: 'Tamaño y masa ×1.3.' },
-  resbaladiza: { n: 'Resbaladiza',  icon: '🧊', price: 8, d: 'Se desliza mucho más lejos tras el golpe.' },
   instinto:    { n: 'Instinto goleador', icon: '🎯', price: 10, d: 'Cuando un compañero le hace un pase, dispara directo a portería. 1 copia: poca fuerza y la dirección puede errar un 20%. 2: fuerza media y error del 10%. 3: máxima fuerza y sin errores.' },
   control:     { n: 'Control de balón', icon: '🛑', price: 8, d: 'Para el balón en seco cuando le llega (de un pase o de un tiro rival). 1 copia: el jugador se mueve hacia donde lo empuja el golpe. 2 copias: se mueve con la mitad de fuerza. 3 copias: el jugador no se mueve.' },
-  motiv:       { n: 'Motivado',     icon: '✨', price: 8, d: 'En cada turno, una estadística al azar (potencia, peso o precisión) sube al máximo (12) y al acabar la jugada vuelve a su valor. 2 copias: dos estadísticas a la vez. 3 copias: las tres.' },
+  motiv:       { n: 'Motivado',     icon: '✨', price: 8, d: 'Durante la segunda mitad del partido sube todas sus estadísticas: +1 con 1 copia, +2 con 2 y +3 con 3.' },
   piedra:      { n: 'Piedra',       icon: '⚪', price: 9, d: 'Resiste los golpes del balón y de otros jugadores: con 1 copia se mueve poco, con 2 muy poco y con 3 no se mueve. Solo se desplaza cuando tira.' },
-  hierro:      { n: 'Salud de hierro', icon: '🩹', price: 6, d: 'Inmune al veneno y a la congelación; si ya está afectado, se recupera.' },
+  hierro:      { n: 'Salud de hierro', icon: '🩹', price: 6, d: 'No le afectan el hielo ni el veneno. 1 copia: durante la primera mitad del partido. 2: durante todo el partido. 3: a todo el equipo durante todo el partido.' },
+  diamante:    { n: 'Diamante',     icon: '💎', price: 12, d: 'Los goles de este jugador dan más dinero: +$1 con 1 copia, +$2 con 2 y +$4 con 3.' },
+  demonio:     { n: 'Demonio',      icon: '😈', price: 10, d: 'Cuando le llega un balón tocado por el rival, tira solo a la portería rival. Dispersión: 30% con 1 copia, 20% con 2 y 5% con 3.' },
+  corazon:     { n: 'Corazón',      icon: '❤️', price: 12, d: 'Cada turno mejora una estadística al azar: +1 con 1 copia, +2 con 2 y +3 con 3. Se reinicia al acabar el partido.' },
+  vampiro:     { n: 'Vampiro',      icon: '🧛', price: 10, d: 'Si choca con un jugador rival antes de tocar el balón, le resta una estadística al azar: −1 con 1 copia, −2 con 2 y −3 con 3. Se reinicia al acabar el partido.' },
   goat:        { n: 'GOAT',         icon: '🐐', price: 14, d: 'Un 10% de probabilidad de jugar el partido con todo a 12. Con 2 copias, 30%; con 3, 50% y el balón siempre va a portería.' },
   arana:       { n: 'Araña',        icon: '🕷️', price: 9, d: 'Durante la jugada del rival se desplaza sola hacia el balón, siempre que esté a menos de 3 veces su tamaño.' },
 };
+/* Salud de hierro: 1 copia = inmune la primera mitad · 2 = todo el partido · 3 = todo el equipo todo el partido */
+function hierroOn(w, b) {
+  const n = abCount(b.abs, 'hierro'); if (n >= 2) return true;
+  if (w.bodies.some(c => c.kind === 'cap' && c.team === b.team && abCount(c.abs, 'hierro') >= 3)) return true;
+  return n === 1 && !w.half2;
+}
+/* mejora (o resta) una estadística de un jugador durante el partido y lo anota para enseñarlo en su ficha: src = icono del item */
+function bumpCap(b, k, d, src) {
+  const o = b.st[k], n = clamp(Math.round((o + d) * 10) / 10, 1, 12.5), real = Math.round((n - o) * 10) / 10; if (!real) return 0;
+  b.st[k] = n;
+  if (k === 'POT') b.vmax = Math.min(1500, b.vmax * potV(n) / potV(o));
+  if (k === 'PES') { b.m += massFor(n) - massFor(o); b.dec += 9 * real; b.r *= 1 + 0.012 * real; }
+  if (k === 'PRE') b.dev = devFor(n);
+  b.ib = b.ib || {}; (b.ib[k] = b.ib[k] ? b.ib[k].slice() : []).push({ i: src, v: real });
+  return real;
+}
+const BUMP_KEYS = ['POT', 'PES', 'PRE', 'VIS'];
+/* Gran Capitán: al empezar el partido, cada compañero gana +N en una estadística al azar */
+function applyCaptain(w, team) {
+  w.bodies.forEach(c => {
+    if (c.kind !== 'cap' || (team !== undefined && c.team !== team)) return; const n = abCount(c.abs, 'capitan'); if (!n) return;
+    w.bodies.forEach(o => { if (o.kind === 'cap' && o.team === c.team && o !== c) { bumpCap(o, pick(BUMP_KEYS), n, '🎖️'); o.mot = true; } });
+  });
+}
 const abCount = (abs, k) => { let n = 0; for (const x of abs || []) if (x === k) n++; return n; };   // las habilidades se pueden repetir hasta 3 veces: cada copia mejora el efecto
 const AB_MAX = 3;
 const PERKS = {
@@ -220,7 +259,6 @@ const NAME_POOLS = {
   THA: [['Somchai', 'Nattapong', 'Kritsada', 'Anucha', 'Pichai', 'Thanawat', 'Weerapat', 'Chaiwat'], ['Srisai', 'Boonyarit', 'Wongsawat', 'Prasert', 'Kaewmanee', 'Intarapong', 'Chaiyasit', 'Sukhum']],
   CAN: [['Alphanso', 'Jonethan', 'Tajon', 'Stephan', 'Ismoël', 'Liam', 'Mathiu', 'Jacub'], ['Davias-Clark', 'David-Lacroix', 'Bucanen', 'Larón-Smith', 'Eustáquia-Roy', 'Cornelias-Gill', 'Osório-Nolen', 'Millor-Tran']],
   CIV: [['Sebastien', 'Franck', 'Wilfrid', 'Simen', 'Sarge', 'Nicolo', 'Odelon', 'Mox'], ['Hollar-Koné', 'Kessó-Traoré', 'Zihe-Diomandé', 'Adingro-Bamba', 'Aurieb-Coulibaly', 'Pépo-Kouassi', 'Kossunou-Yoa', 'Gradal-Ouattara']],
-  HUN: [['Dominek', 'Willo', 'Péter', 'Ádám', 'Milas', 'Barnabás', 'Roland', 'Attela'], ['Szoboszlói', 'Orbán-Kiss', 'Gulácsa', 'Sallei-Nagy', 'Kerkez-Tóth', 'Vargo-Horváth', 'Lovrencsecs', 'Schäfer-Szabó']],
   SMR: [['Mattio', 'Nicolo', 'Filippe', 'Alix', 'Davede', 'Luco', 'Marcó', 'Enia'], ['Tomassoni', 'Righe', 'Zafferoni', 'Palezzi', 'Stolfe', 'Gasperone', 'Valentina', 'Benedettoni']],
   PAR: [['Miguol', 'Julio', 'Antonio', 'Gustavo', 'Ramón', 'Diego', 'Mathías', 'Ángol'], ['Almarón-Cuevas', 'Enceso-Duarte', 'Sanabrea-Cáceres', 'Gámez-Benítez', 'Alderete-Ayala', 'Bobadella-Rojas', 'Arzamendio-Vera', 'Samudeo-Franco']],
 };
@@ -265,7 +303,7 @@ const FORMS = {
 };
 const FORM_KEYS = Object.keys(FORMS);
 const TEAM_FORM = { ESP: '2-2', FRA: '1-3', ITA: '3-1', ALE: '1-2-1', BRA: '1-3', ARG: '2-1-1', ING: '1-1-2', POR: '2-1-1', PBA: '1-2-1', BEL: '2-2', JPN: '2-2', MEX: '1-1-2', CRO: '2-1-1', SUE: '3-1', COL: '1-3', USA: '1-1-2',
-  URU: '3-1', MAR: '2-2', COR: '1-2-1', SUI: '3-1', DIN: '2-2', TUR: '1-3', NOR: '1-3', SEN: '2-1-1', POL: '3-1', EGI: '1-3', NIG: '1-3', CHI: '2-1-1', AUT: '1-2-1', GHA: '2-2', SCO: '1-2-1', UCR: '2-1-1', CMR: '1-3', PER: '3-1', AUS: '2-2', CHN: '2-2', IRL: '1-1-2', GRE: '3-1', THA: '1-2-1', CAN: '1-3', CIV: '1-3', HUN: '2-2', SMR: '3-1', PAR: '3-1',
+  URU: '3-1', MAR: '2-2', COR: '1-2-1', SUI: '3-1', DIN: '2-2', TUR: '1-3', NOR: '1-3', SEN: '2-1-1', POL: '3-1', EGI: '1-3', NIG: '1-3', CHI: '2-1-1', AUT: '1-2-1', GHA: '2-2', SCO: '1-2-1', UCR: '2-1-1', CMR: '1-3', PER: '3-1', AUS: '2-2', CHN: '2-2', IRL: '1-1-2', GRE: '3-1', THA: '1-2-1', CAN: '1-3', CIV: '1-3', SMR: '3-1', PAR: '3-1',
   MCI: '1-2-1', ARS: '2-2', LIV: '1-3', CHE: '2-1-1', MUN: '1-1-2', TOT: '2-2', BAR: '1-2-1', RMA: '1-3', ATM: '3-1', CEL: '2-1-1', VAL: '1-1-2', SEV: '2-2',
   INT: '3-1', NAP: '1-3', JUV: '3-1', MIL: '2-1-1', ROM: '2-2', ATA: '1-3', PSG: '1-3', MON: '2-2', OLM: '1-1-2', LYO: '1-2-1', LIL: '2-2', NIC: '1-1-2',
   BAY: '1-3', LEV: '1-2-1', BVB: '2-1-1', RBL: '1-3', SGE: '2-2', VFB: '1-2-1' };
@@ -301,6 +339,7 @@ function playerSpread(code, role) {
   return d;
 }
 function makeCap(role, code, boost = 0) {
+  if (COUNTRIES[code].custom) return myCap(role);   // equipo creado por el jugador: sus estadísticas e items tal cual
   const R = ROLES.find(r => r.k === role);
   const stars = COUNTRIES[code].best ? 3 : 1, stats = {};
   const bias = COUNTRIES[code].bias, key1 = Object.keys(bias)[0], tier = TIER[code] || 0;
@@ -317,23 +356,46 @@ function makeCap(role, code, boost = 0) {
 }
 // todo equipo (salvo los de nivel fijo) tiene al menos un jugador «normalito tirando a bueno» (media 6)
 function ensureGood(team, code) {
-  if (COUNTRIES[code].allStat) return team;
+  if (COUNTRIES[code].allStat || COUNTRIES[code].custom) return team;
   const avg = c => STAT_KEYS.reduce((a, k) => a + c.stats[k], 0) / STAT_KEYS.length;
   let best = team[0]; team.forEach(c => { if (avg(c) > avg(best) || (avg(c) === avg(best) && c.role === 'DEL')) best = c; });
   for (let n = 0; avg(best) < 6 && n < 30; n++) { const k = STAT_KEYS.filter(s => s !== 'MEN').reduce((a, s) => best.stats[s] < best.stats[a] ? s : a); best.stats[k] = Math.min(12, best.stats[k] + 1); }
   if (best.stars < 2) { best.stars = 2; STAT_KEYS.forEach(s => { best.stats[s] = Math.min(12, best.stats[s] + STAR_BONUS); }); }   // al menos una chapa de 2 estrellas
-  if (!team.some(c => c.abs.length)) {   // y al menos una con una habilidad
-    const others = team.filter(c => c !== best && c.role !== 'POR'), who = pick(others.length ? others : team);
-    who.abs.push(pick(Object.keys(ABILITIES).filter(k => k !== 'capitan' && k !== 'goat')));
-  }
+  if (!team.some(c => c.abs.length)) defaultItems(team, code);   // y cada equipo trae sus items de serie
   return team;
+}
+/* Items de serie de cada selección: fijos por equipo (no cambian entre partidas) y acordes con la posición del jugador */
+const ITEM_POOL = {
+  POR: ['piedra', 'iman', 'gigante', 'control', 'hierro'],
+  DEF: ['bulldozer', 'piedra', 'gigante', 'vampiro', 'hierro', 'arana'],
+  MED: ['capitan', 'control', 'corazon', 'instinto', 'demonio', 'motiv'],
+  EXT: ['arana', 'canon', 'iman', 'motiv', 'demonio', 'diamante'],
+  DEL: ['canon', 'instinto', 'demonio', 'diamante', 'vampiro', 'motiv'],
+};
+function defaultItems(team, code) {
+  let h = 2166136261; const key = 'items|' + code;
+  for (let i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 16777619); }
+  const rn = n => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return (h >>> 0) % n; };
+  for (let i = 0; i < 4; i++) rn(7);
+  const C = COUNTRIES[code], best = !!C.best, tier = TIER[code] || 0;
+  const n = clamp(2 + (tier >= 1 ? 1 : 0) + (best ? 1 : 0) - (rn(3) === 0 ? 1 : 0), 1, 3);   // cuántos jugadores traen item
+  const roles = ['DEL', 'MED', 'DEF', 'EXT'].sort((a, b) => rn(100) - rn(100)).slice(0, n);
+  if (!roles.includes('DEL') && rn(2)) roles[0] = 'DEL';
+  const used = new Set();
+  roles.forEach((r, ix) => {
+    const cap = team.find(c => c.role === r); if (!cap) return;
+    const pool = ITEM_POOL[r].filter(k => !used.has(k)), k1 = pool.splice(rn(pool.length), 1)[0];
+    cap.abs.push(k1); used.add(k1);
+    if (best && ix === 0 && abSlots(cap.stars) >= 2) { const k2 = pool.splice(rn(pool.length), 1)[0]; cap.abs.push(k2); used.add(k2); }   // los equipos de élite: el jugador clave trae dos
+  });
+  if (rn(3) === 0) { const gk = team.find(c => c.role === 'POR'); if (gk && !gk.abs.length) gk.abs.push(ITEM_POOL.POR[rn(ITEM_POOL.POR.length)]); }
 }
 function playerTeam(code) { return ensureGood(ROLES.map(r => makeCap(r.k, code)), code); }
 function enemyTeam(code, round) {
   const base = ensureGood(ROLES.map(r => makeCap(r.k, code)), code);
   return ROLES.map((r, ri) => {
     const cap = base[ri];
-    if (COUNTRIES[code].allStat) return cap;
+    if (COUNTRIES[code].allStat || COUNTRIES[code].custom) return cap;
     STAT_KEYS.forEach(s => { cap.stats[s] = clamp(Math.round(cap.stats[s] + round * 0.6 + (Math.random() * 1.6 - 0.6) - 0.5), 1, 12); });
     const extra = Math.floor(round / 3) + (Math.random() < 0.25 ? 1 : 0), st0 = cap.stars;
     cap.stars = clamp(st0 + extra, 1, 5);
@@ -341,7 +403,7 @@ function enemyTeam(code, round) {
     STAT_KEYS.forEach(s => { cap.stats[s] = clamp(cap.stats[s] + add, 1, 12); });
     const pAb = round < 1 ? 0 : round < 3 ? 0.3 : round < 5 ? 0.6 : 0.9;
     for (let i = 0; i < abSlots(cap.stars); i++) {
-      if (Math.random() < pAb * (i ? 0.55 : 1)) { const k = pick(Object.keys(ABILITIES).filter(k => k !== 'capitan' && !cap.abs.includes(k))); cap.abs.push(k); }
+      if (Math.random() < pAb * (i ? 0.55 : 1)) { const k = pick(Object.keys(ABILITIES).filter(k => k !== 'goat' && k !== 'diamante' && !cap.abs.includes(k))); cap.abs.push(k); }
     }
     return cap;
   });
@@ -365,7 +427,7 @@ function massFor(p) { return 1.2 + 0.15 * p + 0.06 * Math.pow(Math.max(0, p - 5)
 function capBody(def, team, i, mods) {
   const has0 = k => (def.abs || []).includes(k);
   const R = ROLES.find(r => r.k === def.role), abs = def.abs || [], stars = def.stars || 1, st = {};
-  STAT_KEYS.forEach(k => { st[k] = Math.min(12.5, def.stats[k] + ((mods && mods.bonus) || 0)); });
+  STAT_KEYS.forEach(k => { st[k] = Math.min(12.5, def.stats[k]); });
   if (mods && mods.capMen && def.captain) st.MEN = 12;   // reliquia Brazalete
   // MENTALIDAD: a partir de 7, CADA característica tiene su propia probabilidad de subir hasta +1 (con un decimal)
   let irid = false, actB = null, goat = false;
@@ -377,17 +439,17 @@ function capBody(def, team, i, mods) {
   if (goat) { /* GOAT: sin mejoras de mentalidad */ }
   else if (mods && mods.fixAct !== undefined) {   // laboratorio: mejoras de mentalidad ya tiradas (se reutilizan hasta que se pida recalcular)
     if (mods.fixAct) { actB = {}; Object.keys(mods.fixAct).forEach(k => { st[k] = Math.min(12.5, st[k] + mods.fixAct[k]); actB[k] = mods.fixAct[k]; if (mods.fixAct[k] > 0) irid = true; }); }
-  } else if (mods && !mods.noAct && st.MEN < 2) {
-    // mentalidad muy baja: pierde hasta 0.5 de estadísticas en total (valor al azar), repartido entre sus características
-    let left = Math.round(Math.random() * 5) / 10;
+  } else if (mods && !mods.noAct && st.MEN < 5) {
+    // mentalidad baja (menos de 5): pierde algo de estadísticas en total (valor al azar), repartido entre sus características: hasta 0.5 con 1-2, 0.4 con 3, 0.3 con 4
+    let left = Math.round(Math.random() * (st.MEN < 3 ? 5 : st.MEN < 4 ? 4 : 3)) / 10;
     ['POT', 'PES', 'PRE', 'VIS'].sort(() => Math.random() - 0.5).forEach(k => {
       if (left >= 0.1 && Math.random() < 0.5) {
         const g = Math.min(left, Math.round((0.1 + Math.random() * 0.4) * 10) / 10), n = Math.max(1, st[k] - g), real = Math.round((st[k] - n) * 10) / 10;
         if (real > 0) { st[k] = n; (actB = actB || {})[k] = -real; left = Math.round((left - real) * 10) / 10; }
       }
     });
-  } else if (mods && !mods.noAct && st.MEN >= 7) {
-    const p = clamp(0.2 + (st.MEN - 7) * 0.1, 0, 0.75);
+  } else if (mods && !mods.noAct && st.MEN >= 6) {
+    const p = clamp(0.2 + (st.MEN - 7) * 0.1, 0.15, 0.75);
     // mentalidad 11: mejora total SIEMPRE de 1; mentalidad 12: SIEMPRE de 2 (repartida al azar). Por debajo: tope 0.4…0.75 y total al azar entre 0 y ese tope
     if (st.MEN >= 11) {
       const T = st.MEN >= 12 ? 2 : 1, ks = ['POT', 'PES', 'PRE', 'VIS'], wts = ks.map(() => 0.15 + Math.random());
@@ -399,7 +461,7 @@ function capBody(def, team, i, mods) {
         rest = Math.round((rest - g) * 10) / 10;
       });
     } else {
-    const capG = clamp(0.5 + (st.MEN - 8) * 0.125, 0.4, 1);
+    const capG = clamp(0.5 + (st.MEN - 8) * 0.125, 0.3, 1);
     let left = Math.round(Math.random() * capG * 10) / 10;
     ['POT', 'PES', 'PRE', 'VIS'].sort(() => Math.random() - 0.5).forEach(k => {
       if (left >= 0.1 && Math.random() < p) {
@@ -413,18 +475,17 @@ function capBody(def, team, i, mods) {
   let r = FIELD.capR * R.rk * (1 + 0.012 * (st.PES - 3));
   let m = massFor(st.PES);
   let dec = 330 + 9 * st.PES;
-  let vmax = 380 + 1100 * Math.pow(clamp((st.POT - 1) / 11, 0, 1), 1.6);   // curva no lineal
-  if (has('canon')) vmax *= 1 + 0.4 * nA('canon');
+  let vmax = potV(st.POT);
+  if (has('canon')) vmax *= 1 + 0.3 * nA('canon');
   if (has('bulldozer')) m *= 1 + 0.7 * nA('bulldozer');
   if (has('gigante')) { r *= 1 + 0.3 * nA('gigante'); m *= 1 + 0.3 * nA('gigante'); }
-  if (has('resbaladiza')) dec *= 1 / (1 + 0.82 * nA('resbaladiza'));
   if (mods && mods.pot) vmax *= mods.pot;
   
   const sl = formSlots(mods && mods.form)[i];
   const gkMag = mods && mods.gk && def.role === 'POR' ? 3 : 0;
   const hx = team === 0 ? sl[0] * FIELD.W : (1 - sl[0]) * FIELD.W, hy = sl[1] * FIELD.H;
   return { kind: 'cap', gkMag, team, idx: i, x: hx, y: hy, hx, hy, vx: 0, vy: 0, r, m, dec, vmax: Math.min(vmax, 1500), spin: 0, abs, st, stars, name: def.name || R.n, num: def.num || SHIRT[def.role], role: def.role, ang: 0, id: team * 5 + i,
-    dev: devFor(st.PRE), frozen: 0, mot: !!(mods && mods.bonus), irid, actB, captain: !!def.captain, goat, rock: nA('piedra') };
+    dev: devFor(st.PRE), frozen: 0, mot: false, irid, actB, captain: !!def.captain, goat, rock: nA('piedra') };
 }
 /* números reales de un jugador para el tooltip */
 function capInfo(def) {
@@ -455,6 +516,7 @@ function makeWorld(defs0, defs1, opts = {}) {
   const w = { bodies, ball, balls: bodies.filter(b => b.kind === 'ball'), segs: geo.segs, posts: geo.posts, geo, gwL: opts.gwL || FIELD.gw, gwR: opts.gwR || FIELD.gw, goff: null, gt: 0, goal: null, events: [], field, noGoal: false, tilt: null, xd: 1, fdec: 1, lock: [false, false], pull: 0, zones: null, bumpers: null, mud: null, noDev: false, poisonArm: { shooter: -1, armed: true },
     lines: [[0, geo.lt, 0, geo.lb], [FIELD.W, geo.rt, FIELD.W, geo.rb]] };
   applyField(w, field);
+  applyCaptain(w);
   return w;
 }
 function clearField(w) { if (w.dream) { w.dream = false; w.goff = null; setGoalWidths(w, w.gwL, w.gwR); } w.dark = false; w.kz = null; w.kplays = 0; w.mud = null; w.pud = null; w.rain = false; w.fog = false; w.umb = null; w.jura = false; w.tilt = null; w.zones = null; w.bumpers = null; w.pull = 0; w.fdec = 1; w.field = 'normal'; }
@@ -499,7 +561,7 @@ function stepWorld(w, dt) {
   const B = w.bodies;
   for (const b of B) {
     const P = w.kz ? w.kz[b.x < FIELD.W / 2 ? 0 : 1] : w, fd = w.xd * P.fdec * (P !== w ? w.fdec : 1);
-    if (b.kind === 'cap' && b.frozen && b.abs.includes('hierro')) { b.frozen = 0; if (b.mOrig) b.m = b.mOrig; }
+    if (b.kind === 'cap' && b.frozen && hierroOn(w, b)) { b.frozen = 0; if (b.mOrig) b.m = b.mOrig; }
     if (b.kind === 'cap' && !b.frozen && (b.abs.includes('iman') || (b.gkMag && w.playTeam != null && w.playTeam !== b.team))) {
       const n = b.gkMag || abCount(b.abs, 'iman'), R = 130 + 75 * (n - 1), F = 520 + 290 * (n - 1);   // más imanes: más radio y más fuerza
       let ball = w.ball, bd = 1e9;
@@ -511,7 +573,7 @@ function stepWorld(w, dt) {
       b.rockFix = b.rock >= 3 && !b.shotNow;   // piedra: 3 copias = inmóvil salvo cuando tira ella
       b.rockK = b.rock && !b.shotNow ? [1, 0.3, 0.1, 0][Math.min(3, b.rock)] : 1;   // 1 copia: se mueve poco · 2: muy poco
       if (b.shotNow) { b.shotAge = (b.shotAge || 0) + dt; if (b.shotAge > 0.5 && Math.hypot(b.vx, b.vy) < 8) { b.shotNow = false; b.shotAge = 0; } }
-      if (b.poison && b.abs.includes('hierro')) { STAT_KEYS.forEach(k => { if (b.psn && b.psn[k]) b.st[k] += b.psn[k]; }); if (b.psnV) b.vmax = b.psnV; b.dev = devFor(b.st.PRE); b.poison = false; b.psn = null; w.events.push({ t: 'cure', x: b.x, y: b.y, id: b.id }); }   // salud de hierro: se cura
+      if (b.poison && hierroOn(w, b)) { STAT_KEYS.forEach(k => { if (b.psn && b.psn[k]) b.st[k] += b.psn[k]; }); if (b.psnV) b.vmax = b.psnV; b.dev = devFor(b.st.PRE); b.poison = false; b.psn = null; w.events.push({ t: 'cure', x: b.x, y: b.y, id: b.id }); }   // salud de hierro: se cura
       if (b.rockFix) { b.vx = b.vy = 0; continue; }
       if (b.abs.includes('arana') && !b.spiderDone && w.ballTouchedPlay && !b.frozen && w.playTeam != null && w.playTeam !== b.team && (w.playT || 0) > 0.25) {   // araña: va a por el balón durante la jugada rival
         const n = abCount(b.abs, 'arana'), vt = [220, 340, 500][n - 1], ac = 3200 * dt;
@@ -550,7 +612,7 @@ function stepWorld(w, dt) {
       let vk = 0;
       if (P.pud && b.kind === 'ball') { for (const z of P.pud) { const dx = b.x - z.x, dy = b.y - z.y; if (dx * dx + dy * dy < z.r * z.r) { kf = 5; vk = 7; b.wet = 1; break; } } if (b.wet > 0) b.wet = Math.max(0, b.wet - dt * 0.06); }   // charco: el balón se moja y frena
       let tg = 0; if (w.tall && b.kind === 'ball') for (const s of [0, 1]) if (w.tall[s]) { const left = physSide(w, s) === 0; if ((left ? b.x < 165 : b.x > FIELD.W - 165) && b.y > 125 && b.y < 515) tg = 2400; }   // césped alto: el balón se frena muchísimo en el área
-      let ns = sp - b.dec * fd * kf * dt - tg * dt;
+      let ns = sp - (b.dec + (b.kind === 'cap' ? CAPDRAG * sp : 0)) * fd * kf * dt - tg * dt;
       if (vk) ns *= Math.exp(-vk * dt);   // charco: freno extra que solo vence un disparo muy potente
       if (ns > 2100) ns = 2100;
       if (ns < 5) { b.vx = b.vy = 0; b.spin = 0; } else { const k = ns / sp; b.vx *= k; b.vy *= k; }
@@ -588,13 +650,14 @@ function stepWorld(w, dt) {
             if (sp > 60) { const gx = physSide(w, cap.team) === 0 ? FIELD.W : 0, gy = FIELD.H / 2, dd = Math.hypot(gx - ball.x, gy - ball.y) || 1; ball.vx = (gx - ball.x) / dd * sp; ball.vy = (gy - ball.y) / dd * sp; if (sp > 220) ball.fireTeam = cap.team; if (sp > 220) w.events.push({ t: 'goatshot', x: ball.x, y: ball.y }); }
           }
           const passFrom = ball.lastTeam === cap.team && ball.lastId != null && ball.lastId !== cap.id && cap.id !== w.shooterId;
+          const fromRival = ball.lastTeam != null && ball.lastTeam !== -1 && ball.lastTeam !== cap.team && cap.id !== w.shooterId;
           ball.lastTeam = cap.team; ball.lastX = ball.x; ball.lastRole = cap.role; ball.lastName = cap.name;
           if (w.rkick != null && cap.team === w.rkick && cap.id !== w.shooterId && -vn > 60) {   // pase letal: el que recibe el pase dispara a portería a máxima potencia
             const gx = physSide(w, cap.team) === 0 ? FIELD.W : 0, gy = FIELD.H / 2 + (Math.random() - 0.5) * FIELD.gw * 0.5, dd = Math.hypot(gx - ball.x, gy - ball.y) || 1, sp = Math.max(Math.hypot(ball.vx, ball.vy), cap.vmax * 1.7);
             ball.vx = (gx - ball.x) / dd * sp; ball.vy = (gy - ball.y) / dd * sp; ball.fireTeam = cap.team; w.events.push({ t: 'goatshot', x: ball.x, y: ball.y });
           }
           if (ball.btype === 'tres_d' && ball.fresh && -vn > 100) { ball.fresh = false; ball.air0 = ball.air = clamp(Math.hypot(ball.vx, ball.vy) / 950, 0.4, 1.0); w.events.push({ t: 'jump', x: ball.x, y: ball.y }); }
-          if (ball.btype === 'venenosa' && w.poisonArm && w.poisonArm.armed && cap.id !== w.poisonArm.shooter && !w.noDev && !cap.abs.includes('hierro')) {
+          if (ball.btype === 'venenosa' && w.poisonArm && w.poisonArm.armed && cap.id !== w.poisonArm.shooter && !w.noDev && !hierroOn(w, cap)) {
             w.poisonArm.armed = false;
             if (!cap.poison) {
               cap.poison = true;
@@ -620,6 +683,13 @@ function stepWorld(w, dt) {
             const gx = physSide(w, cap.team) === 0 ? FIELD.W : 0, gy = FIELD.H / 2, er = w.noDev ? 0 : (Math.random() * 2 - 1) * [0.31, 0.157, 0][nIn - 1];
             const an = Math.atan2(gy - ball.y, gx - ball.x) + er, sp = Math.min(1500, cap.vmax * [0.45, 0.75, 1.1][nIn - 1]);
             ball.vx = Math.cos(an) * sp; ball.vy = Math.sin(an) * sp; w.events.push({ t: 'goatshot', x: ball.x, y: ball.y });
+          }
+          // demonio: si el balón le llega tocado por el rival, tira solo a la portería rival (dispersión 30% / 20% / 5%)
+          const nDe = abCount(cap.abs, 'demonio');
+          if (nDe && fromRival && -vn > 40) {
+            const gx = physSide(w, cap.team) === 0 ? FIELD.W : 0, gy = FIELD.H / 2, er = w.noDev ? 0 : (Math.random() * 2 - 1) * [0.465, 0.31, 0.078][Math.min(3, nDe) - 1];
+            const an = Math.atan2(gy - ball.y, gx - ball.x) + er, sp = Math.min(1500, cap.vmax * 0.85);
+            ball.vx = Math.cos(an) * sp; ball.vy = Math.sin(an) * sp; w.events.push({ t: 'demonshot', x: ball.x, y: ball.y });
           }
           ball.lastId = cap.id;
         }
@@ -676,7 +746,8 @@ function stepWorld(w, dt) {
 /* visión de juego 0..1: stat 1 → 0 % · stat 10 → 100 % */
 /* Ojo de halcón: cada copia reduce a ~la mitad lo que te falta por ver de la trayectoria */
 const visOf = (b, mult = 1) => visFrac(b.st, mult);
-const visFrac = (st, mult = 1) => clamp((0.05 + 0.95 * Math.pow(clamp((st.VIS - 1) / 11, 0, 1), 2.6)) * mult, 0, 1);   // curva no lineal: 1 casi nada, 12 todo, medios intermedio
+const VISMAX = 850;   // longitud máxima (px) de la línea blanca con visión 12
+const visFrac = (st, mult = 1) => clamp(Math.pow(clamp((st.VIS - 1) / 11, 0, 1), 1.3) * mult, 0, 1.5);   // 0 con visión 1, 1 (=850 px) con visión 12
 /* lanza un jugador: dir en radianes, power 0..1 */
 function launch(cap, ang, power) {
   const v = cap.vmax * clamp(power, 0.05, 1);
@@ -779,9 +850,9 @@ function aimPath(w, capId, ang, power, vis) {
   const pl = pts => { let L = 0; for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); return L; };
   const Lc = pl(capPts), Lb = pl(ballPts);
   const cut = (pts, L) => { if (L <= 0) return []; const out = [pts[0]]; let acc = 0; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); if (acc + d >= L) { const f = (L - acc) / (d || 1); out.push([pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * f, pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * f]); return out; } acc += d; out.push(pts[i]); } return out; };
-  const capVis = cut(capPts, Math.min(Lc, 520));
-  const ballVis = ballPts.length > 1 ? cut(ballPts, Math.min(Lb, Math.max(60, Lb * vis))) : [];
-  return { pts: capVis, ballPts: ballVis, hit, full: vis >= 0.999 };
+  const capVis = cut(capPts, Math.min(Lc, 1400));   // la línea roja llega hasta donde llega el jugador de verdad
+  const ballLen = Math.min(Lb, VISMAX * vis), ballVis = ballPts.length > 1 && ballLen >= 2 ? cut(ballPts, ballLen) : [];
+  return { pts: capVis, ballPts: ballVis, hit, full: ballLen >= Lb - 0.5 };
 }
 
 /* ---------- campos y porterías (cambio en pleno partido) ---------- */

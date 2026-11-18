@@ -71,7 +71,7 @@ const AWAY = {
   PBA:['#21468b','#ff7a00'],BEL:['#111111','#fdda24'],JPN:['#ffffff','#1c3a8a'],MEX:['#ffffff','#0a7a3d'],CRO:['#101a4a','#e31b23'],SUE:['#006aa7','#ffcd00'],COL:['#0a2a7a','#ffd100'],USA:['#ffffff','#bf0a30'],
   URU:['#ffffff','#7ec8ff'],MAR:['#006233','#ffffff'],COR:['#1b2a5e','#c60c30'],SUI:['#ffffff','#d52b1e'],DIN:['#0e1a3a','#c8102e'],TUR:['#ffffff','#e30a17'],NOR:['#00205b','#ba0c2f'],SEN:['#ffffff','#00853f'],
   POL:['#dc143c','#ffffff'],EGI:['#ffffff','#c8102e'],NIG:['#ffffff','#008751'],CHI:['#0039a6','#ffffff'],AUT:['#0a2a5e','#ed2939'],GHA:['#fcd116','#006b3f'],SCO:['#ffd24a','#0a4aa0'],UCR:['#0057b7','#ffd700'],
-  CAN:['#ffffff','#d52b1e'],CIV:['#ffffff','#f77f00'],HUN:['#ffffff','#ce2939'],SMR:['#1b3a8a','#5eb6e4'],PAR:['#0038a8','#ffffff'],
+  CAN:['#ffffff','#d52b1e'],CIV:['#ffffff','#f77f00'],SMR:['#1b3a8a','#5eb6e4'],PAR:['#0038a8','#ffffff'],
   CMR:['#fcd116','#00a35a'],PER:['#ffffff','#d91023'],AUS:['#00843d','#ffcd00'],CHN:['#ffde00','#de2910'],IRL:['#ffffff','#169b62'],GRE:['#ffffff','#0d5eaf'],THA:['#e3262e','#2b3a8c'],
   LRD:['#ffffff','#2ad4b8'],
   MCI:['#1c1c28','#6cabdd'],ARS:['#f4e04d','#ef0107'],LIV:['#111111','#00b2a9'],RMA:['#2a1a5e','#febe10'],BAR:['#f2c500','#a50044'],ATM:['#101a3a','#cb3524'],INT:['#ffffff','#0068a8'],NAP:['#ffffff','#12a0d7'],
@@ -79,6 +79,7 @@ const AWAY = {
   MUN:['#ffffff','#da291c'],TOT:['#132257','#ffffff'],CEL:['#1a2a5e','#8ac3ee'],VAL:['#111111','#ff8a00'],SEV:['#111a3a','#d4001f'],MIL:['#ffffff','#fb090b'],ROM:['#ffffff','#8e1f2f'],ATA:['#ffffff','#1e71b8'],
   LYO:['#1d3c87','#ffffff'],LIL:['#ffffff','#e01e13'],NIC:['#ffffff','#e3001b'],RBL:['#0b1a3a','#dd0741'],SGE:['#ffffff','#e1000f'],VFB:['#e32219','#ffffff']
 };
+if (typeof applyMyTeam === 'function') applyMyTeam();
 const kitOf = (code, other) => {
   let c1 = COUNTRIES[code].c1, c2 = COUNTRIES[code].c2;
   const clash = (a, b) => colorDist(a, b) < 120;
@@ -402,7 +403,7 @@ function toast(msg) {
   document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
 }
 
-const poolOf = code => CODES;
+const poolOf = code => CODES.filter(c => !COUNTRIES[c].custom);   // el equipo del jugador nunca sale de rival en torneo/liga
 let TOUR_RAND = true;
 const TOUR_OPT = { turns: 10, groups: true };   // opciones del torneo (turnos por equipo y fase de grupos)
 /* ===== partida guardada (se conserva al cerrar el navegador): se guarda en cada pantalla entre partidos ===== */
@@ -423,7 +424,8 @@ function clearRun() { try { localStorage.removeItem(RUN_KEY); } catch (e) { /* n
 function loadRun() {
   try {
     // partidas guardadas con habilidades que ya no existen: Ojo de halcón pasa a Instinto goleador y Explosivo desaparece
-    const raw = (localStorage.getItem(RUN_KEY) || 'null').replace(/"halcon"/g, '"instinto"').replace(/"(explosivo|congelador|efecto)",/g, '').replace(/,"(congelador|efecto)"/g, '').replace(/"(congelador|efecto)"/g, '"control"').replace(/"explosivo",/g, '').replace(/,"explosivo"/g, '').replace(/"explosivo"/g, '"instinto"');
+    const raw = (localStorage.getItem(RUN_KEY) || 'null').replace(/"halcon"/g, '"instinto"').replace(/"resbaladiza",/g, '').replace(/,"resbaladiza"/g, '').replace(/"resbaladiza"/g, '"bulldozer"').replace(/"(explosivo|congelador|efecto)",/g, '').replace(/,"(congelador|efecto)"/g, '').replace(/"(congelador|efecto)"/g, '"control"').replace(/"explosivo",/g, '').replace(/,"explosivo"/g, '').replace(/"explosivo"/g, '"instinto"');
+    if (/"HUN"/.test(raw)) return null;   // partida guardada con Hungría (ya no existe)
     const o = JSON.parse(raw); if (o && o.G && Array.isArray(o.G.cards)) o.G.cards = o.G.cards.filter(x => !x || !['onda', 'super'].includes(x.k)).map(x => Object.assign(x, { lv: 1 }));
     return o && o.v === 1 && o.G && o.G.caps ? o : null; } catch (e) { return null; }
 }
@@ -471,8 +473,7 @@ function enemyHand(r) {
   return wPick(CARD_KEYS, k => CARDS[k].price, n).map(k => ({ k, lv: 1, used: false }));
 }
 function startMatch() {
-  const cap3 = G.round < 3 && G.caps.reduce((a, c) => Math.max(a, c ? abCount(c.abs, 'capitan') : 0), 0);
-  const mods0 = { pot: hasPerk('hinchada') ? 1.12 : 1, gk: hasPerk('guantes') ? 3 : 0, form: G.form, bonus: cap3 ? 2 * cap3 : 0, capMen: hasPerk('brazalete') };
+  const mods0 = { pot: hasPerk('hinchada') ? 1.12 : 1, gk: hasPerk('guantes') ? 3 : 0, form: G.form, capMen: hasPerk('brazalete') };
   const defs1 = G.enemyDefs.map(d => ({ role: d.role, stats: Object.assign({}, d.stats), abs: d.abs.slice(), stars: d.stars, name: d.name, num: d.num, captain: d.captain }));
   if (hasPerk('roja')) { defs1[1 + rnd(4)] = null; }
   beginMatch({
@@ -500,8 +501,8 @@ function playFriendly() {
   const defs1 = j2 ? (P ? cl(P.caps[1]) : playerTeam(FR.c1)) : enemyTeam(FR.c1, lvl);
   const fp = P ? [P.perks[0], j2 ? P.perks[1] : []] : [[], []], has = (s, k) => fp[s].includes(k);
   const mods = s => {
-    const d = s === 0 ? defs0 : defs1, o = { form: FR['f' + s] }, c3 = d.reduce((a, c) => Math.max(a, c ? abCount(c.abs, 'capitan') : 0), 0);
-    if (has(s, 'hinchada')) o.pot = 1.12; if (has(s, 'guantes')) o.gk = 3; if (has(s, 'brazalete')) o.capMen = true; if (c3 && P) o.bonus = 2 * c3;
+    const o = { form: FR['f' + s] };
+    if (has(s, 'hinchada')) o.pot = 1.12; if (has(s, 'guantes')) o.gk = 3; if (has(s, 'brazalete')) o.capMen = true;
     return o;
   };
   const m0 = mods(0), m1 = mods(1);
@@ -600,7 +601,7 @@ const who = t => M.S.j2 ? 'J' + (t + 1) : (t === 0 ? 'TÚ' : 'RIVAL');
 
 const vic0 = (A, B, pt) => A.team === pt ? B : A;
 function startPlay(team, id) {
-  M.touched = false; M.penCand = null; M.ballStart = M.w.balls.map(q => [q.x, q.y]); M.hitRival = false; M.pushed = false; M.theater = false; M.playTeam = team; M.w.ballTouchedPlay = false; M.w.balls.forEach(q => { q.playHit = false; q.fireTeam = null; }); M.w.bodies.forEach(b => { b.spiderDone = false; b.spiderT = 0; b.spiderArm = undefined; });
+  M.touched = false; M.penCand = null; M.ballStart = M.w.balls.map(q => [q.x, q.y]); M.hitRival = false; M.vamp = {}; M.pushed = false; M.theater = false; M.playTeam = team; M.w.ballTouchedPlay = false; M.w.balls.forEach(q => { q.playHit = false; q.fireTeam = null; }); M.w.bodies.forEach(b => { b.spiderDone = false; b.spiderT = 0; b.spiderArm = undefined; });
   M.play = { team, shooter: id, relays: 0, touch: new Set(), posts: 0, walls: 0 };
   M.w.balls.forEach(b => { b.chg = 0; b.lastId = null; b.curve = null; if (b.btype === 'tres_d') b.fresh = true; });
   M.w.poisonArm = { shooter: id, armed: true };
@@ -675,7 +676,7 @@ function updateAim() {
 
 function cancelAim() {
   if (!M) return;
-  if (M.drag) { M.drag = null; M.aim = null; M.sel = null; motivateEnd(); hudCap(); sfx.click(); }
+  if (M.drag) { M.drag = null; M.aim = null; M.sel = null; hudCap(); sfx.click(); }
   else if (M.picking) { M.picking = null; hudCap(); toast('Carta cancelada (no se ha gastado)'); }
 }
 
@@ -777,8 +778,7 @@ function runCard0(side, idx, tg, announced) {
       tg = pick(mine.length && (!rival.length || Math.random() < 0.7) ? mine : rival.length ? rival : all); }   // 70% de un jugador de quien usa el comodín, 30% del rival
     if (!tg) { toast('Todos los jugadores ya son GOAT'); } else {
       const o = Object.assign({}, tg.st), t12 = (12 - 1) / 11;
-      const baseV = x => 380 + 1100 * Math.pow(clamp((x - 1) / 11, 0, 1), 1.6);
-      tg.vmax = Math.min(1500, tg.vmax * baseV(12) / baseV(o.POT));
+      tg.vmax = Math.min(1500, tg.vmax * potV(12) / potV(o.POT));
       tg.m *= massFor(12) / massFor(o.PES); tg.dec += 9 * (12 - o.PES); tg.r *= 1 + 0.012 * (12 - o.PES);
       STAT_KEYS.forEach(s2 => { tg.st[s2] = Math.max(tg.st[s2], 12); }); tg.dev = devFor(tg.st.PRE); tg.goat = true; tg.irid = true;
       fx.pops.push({ x: tg.x, y: tg.y - 50, txt: '🐐 ¡MODO GOAT!', t: 0, col: '#ffe36a', big: 1.5 }); fx.rings.push({ x: tg.x, y: tg.y, t: 0, v: 1.8 }); fx.shake = 0.4; sfx.win();
@@ -787,7 +787,7 @@ function runCard0(side, idx, tg, announced) {
   }
   else if (k === 'motivado') {
     const d0 = {}; STAT_KEYS.forEach(s => { const n = Math.min(12.5, tg.st[s] + lv); d0[s] = n - tg.st[s]; tg.st[s] = n; });
-    tg.vmax = Math.min(1500, tg.vmax + 120 * d0.POT); tg.m += massFor(tg.st.PES) - massFor(tg.st.PES - d0.PES); tg.dec += 9 * d0.PES; tg.r *= 1 + 0.012 * d0.PES; tg.dev = devFor(tg.st.PRE); tg.mot = true;
+    tg.vmax = Math.min(1500, tg.vmax * potV(tg.st.POT) / potV(tg.st.POT - d0.POT)); tg.m += massFor(tg.st.PES) - massFor(tg.st.PES - d0.PES); tg.dec += 9 * d0.PES; tg.r *= 1 + 0.012 * d0.PES; tg.dev = devFor(tg.st.PRE); tg.mot = true;
     fx.pops.push({ x: tg.x, y: tg.y - 44, txt: '✨ ¡MOTIVADO!', t: 0, col: '#ff9be8', big: 1.3 }); fx.rings.push({ x: tg.x, y: tg.y, t: 0, v: 1.4 });
   }
   else if (k === 'amarilla') {
@@ -869,7 +869,7 @@ function runCard0(side, idx, tg, announced) {
       STAT_KEYS.forEach(s2 => {
         const n2 = Math.max(1, b.st[s2] - dn), real = Math.round((n2 - b.st[s2]) * 10) / 10; if (!real) return;
         b.st[s2] = n2;
-        if (s2 === 'POT') b.vmax = Math.max(200, b.vmax + 120 * real);
+        if (s2 === 'POT') b.vmax = Math.max(200, b.vmax * potV(b.st.POT) / potV(b.st.POT - real));
         if (s2 === 'PES') { b.m += massFor(b.st.PES) - massFor(b.st.PES - real); b.dec += 9 * real; b.r *= 1 + 0.012 * real; }
         if (s2 === 'PRE') b.dev = devFor(b.st.PRE);
         b.actB = b.actB || {}; b.actB[s2] = Math.round(((b.actB[s2] || 0) + real) * 10) / 10;
@@ -879,7 +879,7 @@ function runCard0(side, idx, tg, announced) {
     fx.shake = 0.3; banner('😞 DESMOTIVACIÓN', 'Todo el rival baja −' + dn + ' en todas las estadísticas', 1700); logEv('😞', 'Desmotivación: el rival baja −' + dn + ' en todo'); hudCap();
   }
   else if (k === 'intoxicados') {
-    let n3 = 0; w.bodies.filter(b => b.kind === 'cap' && b.team === opp && !b.abs.includes('hierro') && !b.poison).forEach(b => { b.poison = true; n3++; fx.pops.push({ x: b.x, y: b.y - 44, txt: '☠ ENVENENADO', t: 0, col: '#dba0ff', big: 1 }); });
+    let n3 = 0; w.bodies.filter(b => b.kind === 'cap' && b.team === opp && !hierroOn(M.w, b) && !b.poison).forEach(b => { b.poison = true; n3++; fx.pops.push({ x: b.x, y: b.y - 44, txt: '☠ ENVENENADO', t: 0, col: '#dba0ff', big: 1 }); });
     if (lv >= 2) M.extra[side] += lv - 1;
     fx.shake = 0.3; banner('🤢 INTOXICADOS', n3 ? 'Todo el rival pierde la puntería' : 'Nadie se pudo envenenar', 1700); logEv('🤢', 'Intoxicados: ' + n3 + ' jugadores sin puntería'); hudCap();
   }
@@ -931,7 +931,7 @@ function runCard0(side, idx, tg, announced) {
 }
 function applyPick(tg) {
   const pk = M.picking; M.picking = null; const win = M.waitWin;
-  if (pk.k === 'congelar' && tg.abs.includes('hierro')) { toast('🩹 Salud de hierro: no se puede congelar (carta no gastada)'); hudCap(); return; }
+  if (pk.k === 'congelar' && hierroOn(M.w, tg)) { toast('🩹 Salud de hierro: no se puede congelar (carta no gastada)'); hudCap(); return; }
   runCard(pk.side, pk.idx, tg); if (win && M.phase === 'move') M.seq++;
 }
 function applyBoost(c) { if (M.boostId === c.id) { let f = M.boostMul; if (M.boostMax) { f *= Math.max(1, 1480 / Math.max(1, c.vmax)); M.fire = true; M.boostMax = false; } c.vx *= f; c.vy *= f; c.m0 = c.m; c.m *= 2; M.boostCap = c; M.boostId = null; } }
@@ -956,7 +956,7 @@ function onDown(e) {
   if (!canShoot()) return;
   let best = null, bd = 1e9;
   M.w.bodies.forEach(b => { if (b.kind === 'cap' && b.team === M.turn) { const d = Math.hypot(b.x - p.x, b.y - p.y); if (d < b.r + 16 && d < bd) { bd = d; best = b; } } });
-  if (best) { M.sel = best.id; M.drag = { id: best.id, p0: { x: p.x, y: p.y } }; motivate(best); cv.setPointerCapture && cv.setPointerCapture(e.pointerId); updateAim(); hudCap(); sfx.click(); }
+  if (best) { M.sel = best.id; M.drag = { id: best.id, p0: { x: p.x, y: p.y } }; cv.setPointerCapture && cv.setPointerCapture(e.pointerId); updateAim(); hudCap(); sfx.click(); }
 }
 function onMove(e) {
   if (!M || G.screen !== 'match') return;
@@ -979,7 +979,7 @@ function onUp(e) {
   if (!M || !M.drag) return;
   const d = M.drag; M.drag = null; M.aim = null;
   const moved = !d.p0 || Math.hypot(M.ptr.x - d.p0.x, M.ptr.y - d.p0.y) >= 10;   // un simple clic (sin arrastrar) solo selecciona, nunca tira
-  if (moved && d.len >= 18 && d.ang != null && canShoot()) shoot(d.id, d.ang, d.power); else motivateEnd();
+  if (moved && d.len >= 18 && d.ang != null && canShoot()) shoot(d.id, d.ang, d.power);
 }
 /* gasta el tiro: los tiros extra (M.free) no restan del cupo; los normales sí y pasan la rotación */
 function consumeShot(team) {
@@ -990,28 +990,10 @@ function invertIfNeeded(team, ang) {
   if (M.invert[team] > 0) { M.invert[team]--; fx.pops.push({ x: FIELD.W / 2, y: FIELD.H / 2 - 120, txt: '🔄 ¡CONTROLES INVERTIDOS!', t: 0, col: '#d66bff', big: 1 }); return ang + Math.PI; }
   return ang;
 }
-/* habilidad Motivado: al tirar puede mejorar una característica hasta +1 solo en esta jugada */
-function motivate(c) {
-  const n = abCount(c.abs, 'motiv'); if (!n || c.tmpB) return;
-  const ks = shuffle(['POT', 'PES', 'PRE'].filter(k => c.st[k] < CONFIG.statMax)).slice(0, n); if (!ks.length) return;
-  c.tmpB = { st: { ...c.st }, vmax: c.vmax, m: c.m, dec: c.dec, r: c.r, dev: c.dev, mp: c.frozen ? 0 : 1 };   // se guarda todo para devolverlo exacto al acabar
-  ks.forEach(k => {
-    const o = c.st[k], nv = CONFIG.statMax; c.st[k] = nv;
-    if (k === 'POT') c.vmax = Math.min(1500, c.vmax * (380 + 1100 * Math.pow((nv - 1) / 11, 1.6)) / (380 + 1100 * Math.pow(Math.max(0, o - 1) / 11, 1.6)));
-    if (k === 'PES') { if (!c.frozen) c.m *= massFor(nv) / massFor(o); c.dec += 9 * (nv - o); c.r *= (1 + 0.012 * (nv - 3)) / (1 + 0.012 * (o - 3)); }
-    if (k === 'PRE') c.dev = devFor(c.st.PRE);
-  });
-  fx.pops.push({ x: c.x, y: c.y - 44, txt: '✨ MOTIVADO ' + ks.map(k => STATS[k].icon).join('') + ' ¡AL MÁXIMO!', t: 0, col: '#fff3a0', big: 1.1 }); logEv('✨', `<b>${c.name}</b> sale motivado: ${ks.join(' y ')} al máximo esta jugada`);
-}
-function motivateEnd() {
-  if (!M) return;
-  M.w.bodies.forEach(c => { if (!c.tmpB) return; const t = c.tmpB; c.st = t.st; c.vmax = t.vmax; if (t.mp) c.m = t.m; c.dec = t.dec; c.r = t.r; c.dev = t.dev; c.tmpB = null; });
-}
 function shoot(id, ang, power) {
   const c = capById(id);
   if (M.lab && typeof labSnap === 'function') { labSnap(); M.labCapt = false; }   // laboratorio: foto antes del tiro para poder repetirlo
   ang = invertIfNeeded(M.turn, ang);
-  motivate(c);
   launch(c, ang, power);
   applyBoost(c);
   startPlay(M.turn, id);
@@ -1036,7 +1018,7 @@ function aiUseCard(team) {
     if (!caps.length) return false;
     const bl = w.balls[0];
     tg = caps.reduce((a, b) => Math.hypot(a.x - bl.x, a.y - bl.y) < Math.hypot(b.x - bl.x, b.y - bl.y) ? a : b);
-    if (k === 'congelar' && tg.abs.includes('hierro')) return false;
+    if (k === 'congelar' && hierroOn(M.w, tg)) return false;
   }
   runCard(team, i, tg);
   return true;
@@ -1122,7 +1104,7 @@ function bumpStat(b, k, d) {
   if (!d) return 0;
   const n = Math.max(1, Math.min(12.5, b.st[k] + d)), real = Math.round((n - b.st[k]) * 10) / 10; if (!real) return 0;
   b.st[k] = n;
-  if (k === 'POT') b.vmax = Math.min(1500, b.vmax + 120 * real);
+  if (k === 'POT') b.vmax = Math.min(1500, b.vmax * potV(b.st.POT) / potV(b.st.POT - real));
   if (k === 'PES') { b.m += massFor(b.st.PES) - massFor(b.st.PES - real); b.dec += 9 * real; b.r *= 1 + 0.012 * real; }
   if (k === 'PRE') b.dev = devFor(b.st.PRE);
   b.actB = b.actB || {}; b.actB[k] = Math.round(((b.actB[k] || 0) + real) * 10) / 10;
@@ -1185,6 +1167,24 @@ function multiGK() {
     if (best) { M.mg[s] = { b: best, r0: best.r, m0: best.m }; best.r *= 1.3; best.m *= 1.3; fx.pops.push({ x: best.x, y: best.y - 44, txt: '🧤 MULTIPORTERO', t: 0, col: '#8dd7ff', big: 0.9 }); }
   }
 }
+/* items que actúan con el paso de los turnos: Corazón (cada turno) y Motivado (segunda mitad); Salud de hierro de 1 copia caduca a mitad de partido */
+function itemsTurnEnd(pt) {
+  if (!M || M.over || M.so || M.lab) return;
+  const caps = M.w.bodies.filter(b => b.kind === 'cap');
+  if (pt != null) caps.filter(b => b.team === pt).forEach(b => {
+    const n = abCount(b.abs, 'corazon'); if (!n) return;
+    const ks = BUMP_KEYS.filter(k => b.st[k] < 12); if (!ks.length) return;
+    const k = pick(ks), r = bumpCap(b, k, n, '❤️'); if (r) { fx.pops.push({ x: b.x, y: b.y - 44, txt: '❤️ ' + STATS[k].icon + ' +' + r, t: 0, col: '#ff7a9c', big: 1 }); }
+  });
+  if (!M.half2 && M.shots[0] + M.shots[1] <= (M.maxTurns[0] + M.maxTurns[1]) / 2) {
+    M.half2 = true; M.w.half2 = true;
+    caps.forEach(b => {
+      const n = abCount(b.abs, 'motiv'); if (n) { BUMP_KEYS.forEach(k => bumpCap(b, k, n, '✨')); fx.pops.push({ x: b.x, y: b.y - 44, txt: '✨ MOTIVADO +' + n, t: 0, col: '#fff3a0', big: 1.2 }); logEv('✨', `<b>${b.name}</b> sale motivado en la segunda mitad: todas sus estadísticas +${n}`); }
+      if (abCount(b.abs, 'hierro') === 1 && !caps.some(c => c.team === b.team && abCount(c.abs, 'hierro') >= 3)) fx.pops.push({ x: b.x, y: b.y - 44, txt: '🩹 Fin de la protección', t: 0, col: '#9dff8a', big: 0.9 });
+    });
+  }
+  hudCap();
+}
 function nextTurn() {
   M.fire = false;
   if (M.boostCap) { M.boostCap.m = M.boostCap.m0; M.boostCap = null; }
@@ -1197,7 +1197,8 @@ function nextTurn() {
     M.w.kz.forEach(p => { if (p.field === 'tilt') newTilt(p); });
   }
   unbribe();
-  const pt = M.playTeam; M.playTeam = null; motivateEnd();
+  const pt = M.playTeam; M.playTeam = null;
+  itemsTurnEnd(pt);
   setTimeout(() => { if (M && M.phase === 'aim') multiGK(); }, 0);
   if (pt != null && M.pase && M.pase[pt] > 0 && M.pase[pt] < 900) M.pase[pt]--;
   if (pt != null && M.marr && M.marr[pt] > 0 && M.marr[pt] < 900) M.marr[pt]--;
@@ -1494,7 +1495,8 @@ function goalScored() {
   for (const t of [0, 1]) { const df = M.score[1 - t] - M.score[t]; if ((df >= 3 && M.defl[t] < 1) || (df >= 5 && M.defl[t] < 2)) { M.defl[t] = df >= 5 ? 2 : 1; mentalDrop(M.w.bodies.filter(b => b.kind === 'cap' && b.team === t), tn(M.codes[t]) + ' se hunde (−' + df + ')'); } }
   const pl = M.play; let combo = 0;
   if (pl && pl.team === s) combo = (g.chg || 0) + pl.relays + Math.max(0, pl.touch.size - 1) + pl.posts;
-  const cash = s === 0 && M.run ? 2 + 2 * combo : 0;
+  let cash = s === 0 && M.run ? 2 + 2 * combo : 0;
+  if (cash && g.lastTeam === s && g.lastName) { const dsc = M.w.bodies.find(b => b.kind === 'cap' && b.team === s && b.name === g.lastName), nD = dsc ? abCount(dsc.abs, 'diamante') : 0; if (nD) { const dm = [1, 2, 4][Math.min(3, nD) - 1]; cash += dm; fx.pops.push({ x: dsc.x, y: dsc.y - 44, txt: '💎 +$' + dm, t: 0, col: '#7ee8ff', big: 1.2 }); } }
   M.cash += cash; M.lastGoalVal = cash;
   { const og = g.lastTeam != null && g.lastTeam !== -1 && g.lastTeam !== s; logEv('⚽', `<b>${tn(M.codes[s])}</b> ${g.lastName ? g.lastName : ''}${og ? ' (en propia)' : ''}${val > 1 ? ' ×' + val : ''}${cash ? ' · 💰+$' + cash : ''}`); }
   if (combo >= 1) sfx.combo(combo);
@@ -1780,6 +1782,17 @@ function update(dt) {
     // eventos de sonido / efectos
     for (const e of w.events) {
       if (e.t === 'cap' && M.playTeam != null && e.a < 90 && e.b < 90) { const A0 = capById(e.a), B0 = capById(e.b); if (A0 && B0 && A0.team !== B0.team) M.pushed = true; }
+      if (e.t === 'cap' && M.playTeam != null && !M.touched && !M.so && e.a < 90 && e.b < 90) {   // vampiro: choca con un rival antes de tocar el balón
+        const A1 = capById(e.a), B1 = capById(e.b);
+        if (A1 && B1 && A1.team !== B1.team) {
+          const vm = A1.team === M.playTeam ? A1 : B1, vc = vm === A1 ? B1 : A1, nV = abCount(vm.abs, 'vampiro'), key = vm.id + '>' + vc.id;
+          M.vamp = M.vamp || {};
+          if (nV && !M.vamp[key]) {
+            M.vamp[key] = 1; const k = pick(BUMP_KEYS.filter(q => vc.st[q] > 1)); const r = k ? bumpCap(vc, k, -nV, '🧛') : 0;
+            if (r) { fx.pops.push({ x: vc.x, y: vc.y - 44, txt: '🧛 ' + STATS[k].icon + ' ' + r, t: 0, col: '#ff5a7a', big: 1.2 }); logEv('🧛', `<b>${vm.name}</b> drena a <b>${vc.name}</b>: ${STATS[k].n} ${r}`); hudCap(); }
+          }
+        }
+      }
       if (e.t === 'cap' && M.playTeam != null && !M.touched && !M.penAward && !M.penCand && !M.so && e.a < 90 && e.b < 90) {
         const A = capById(e.a), B = capById(e.b), pt = M.playTeam;
         if (A && B && A.team !== B.team) {
@@ -1795,6 +1808,7 @@ function update(dt) {
       if (e.t === 'ball' && M.homing && (e.a === M.homing.id || e.b === M.homing.id)) M.homing.hit = true;
       if (e.t === 'jump') { sfx.zap(); fx.pops.push({ x: e.x, y: e.y - 34, txt: '¡SALTA!', t: 0, col: '#9be7ff', big: 0.9 }); }
       else if (e.t === 'goatshot') { fx.pops.push({ x: e.x, y: e.y - 40, txt: '🐐 ¡A PORTERÍA!', t: 0, col: '#ffe36a', big: 1.1 }); fx.rings.push({ x: e.x, y: e.y, t: 0, v: 1.3 }); }
+      else if (e.t === 'demonshot') { fx.pops.push({ x: e.x, y: e.y - 40, txt: '😈 ¡A PORTERÍA!', t: 0, col: '#ff6a4a', big: 1.1 }); fx.rings.push({ x: e.x, y: e.y, t: 0, v: 1.3 }); }
       else if (e.t === 'cure') { fx.pops.push({ x: e.x, y: e.y - 44, txt: '🩹 ¡CURADO!', t: 0, col: '#9dff8a', big: 1.1 }); hudCap(); }
       else if (e.t === 'poison') { sfx.whistle(); fx.pops.push({ x: e.x, y: e.y - 44, txt: '☠ ENVENENADA', t: 0, col: '#dba0ff', big: 1.1 }); { const tp = $('#tip'); if (tp) tp.dataset.h = ''; } hudCap(); hudHand(); }
       if (w.dark) { const nowT = performance.now(); if (e.t === 'plit') (M.litP = M.litP || []).push({ x: e.x, y: e.y, t: nowT }); else if (e.t === 'ball') { M.litC = M.litC || {}; if (e.a < 90) M.litC[e.a] = nowT; if (e.b < 90) M.litC[e.b] = nowT; } }
@@ -2277,9 +2291,9 @@ function hudScore() {
   el.innerHTML = `
     <div class="sb-round">${matchTitle()}${M.sudden ? ' · MUERTE SÚBITA' : ''}${tags.length ? ' · ' + tags.join(' · ') : ''}${M.w.noGoal ? ' · 🔒 SAQUE' : ''}</div>
     <div class="sb-main">
-      <div class="sb-team a ${M.turn === 0 && !over ? 'active' : ''}">${flagSVG(M.codes[0])}<b>${M.codes[0]}</b></div>
+      <div class="sb-team a ${M.turn === 0 && !over ? 'active' : ''}">${flagSVG(M.codes[0])}<b>${scode(M.codes[0])}</b></div>
       <div class="sb-score"><span>${M.score[0]}</span><i>:</i><span>${M.score[1]}</span></div>
-      <div class="sb-team b ${M.turn === 1 && !over ? 'active' : ''}"><b>${M.codes[1]}</b>${flagSVG(M.codes[1])}</div>
+      <div class="sb-team b ${M.turn === 1 && !over ? 'active' : ''}"><b>${scode(M.codes[1])}</b>${flagSVG(M.codes[1])}</div>
     </div>
     ${M.so ? soMarks() : `<div class="sb-turns"><span class="dots l">${dots(M.shots[0], maxS || M.maxTurns[0], 'a')}</span><em>${label}${chainTxt}</em><span class="dots r">${dots(M.shots[1], maxS || M.maxTurns[1], 'b')}</span></div>`}`;
 }
@@ -2333,18 +2347,21 @@ function hudHand() {
   ee.innerHTML = eh.length ? `<div class="eh-t">🤖 COMODINES DEL RIVAL</div><div class="eh-row">` + eh.map(c => `<div class="eh ${c.used ? 'used' : ''}"><span class="eh-i">${ART[c.k]}</span><small class="eh-lv">NV ${c.lv}</small><div class="hc-tip"><b>${CARDS[c.k].n} · Nivel ${c.lv}${c.used ? ' · USADA' : ''}</b><span>${CARDS[c.k].d(c.lv)}</span></div></div>`).join('') + '</div>' : '';
 }
 const svc = v => Math.min(12, Math.max(7, Math.round(v)));
+/* mejoras de items (🎖️ ❤️ ✨ 🧛…) agrupadas por icono: [{i, v}] → suma de cada icono */
+const ibSum = (ib, k) => (ib && ib[k] || []).reduce((a, x) => a + x.v, 0);
+const ibChips = (ib, k) => { const g = {}; (ib && ib[k] || []).forEach(x => { g[x.i] = Math.round(((g[x.i] || 0) + x.v) * 10) / 10; }); return Object.keys(g).filter(i => g[i]).map(i => `<small class="actb ib ${g[i] < 0 ? 'neg' : ''}">${g[i] > 0 ? '+' : '−'}${Math.abs(g[i])}${i}</small>`).join(''); };
 function hudCap() {
   const el = $('#hud-cap'); if (!el || !M) return;
   let c = M.sel != null ? capById(M.sel) : null;
   const inPlay = false;
   if (inPlay && M.play && M.play.shooter != null) c = capById(M.play.shooter) || c;
   if ((M.phase === 'pen' || M.so) && !(c && M.human[c.team] && c.team === M.turn && M.phase === 'pen')) { el.innerHTML = '<div class="hint">🥅 <b>Penalti</b>: para la flecha en la zona <b class="warn">verde</b> con clic o ESPACIO. Si defiendes, para TU flecha más cerca del centro verde que la del rival.</div>'; return; }
-  if (!c || (!inPlay && (!M.human[c.team] || c.team !== M.turn))) { el.innerHTML = `<div class="hint">${M.S.j2 ? `Turno de <b>J${M.turn + 1}</b>: ` : ''}Arrastra <b>un jugador</b> hacia atrás y suelta.<br><b class="warn">⚠ Toca el balón o el rival tira 2 veces.</b><br>${M.so ? '' : 'No toques a un rival en el área propia antes del balón (penalti).'}<br><span class="mouse-only">Clic derecho: cancelar · Esc: menú</span><span class="touch-only">Para cancelar, suelta sobre el propio jugador</span></div>${statusHTML()}`; return; }
+  if (!c || (!inPlay && (!M.human[c.team] || c.team !== M.turn))) { el.innerHTML = `<div class="hint">${M.S.j2 ? `Turno de <b>J${M.turn + 1}</b>: ` : ''}Arrastra <b>un jugador</b> hacia atrás y suelta.<br><b class="warn">⚠ Toca el balón o el rival tira 2 veces.</b><br>${M.so ? '' : 'No toques a un rival en el área propia antes del balón (penalti).'}<br><span class="mouse-only">Clic derecho: cancelar · Esc: menú</span><span class="touch-only">Para cancelar, toca con un segundo dedo</span></div>${statusHTML()}`; return; }
   const R = ROLES.find(r => r.k === c.role);
   const st = c.st;
   el.innerHTML = `<div class="cc-head"><b>${c.name}${c.captain ? ' <span class="capt">C</span>' : ''} <span class="gold">${'★'.repeat(c.stars || 1)}</span></b><em>${R.n}</em><span class="shirt">#${c.num}</span></div>
     <div class="cc-abs">${[...new Set(c.abs)].map(k => `<span class="cc-ab" title="${ABILITIES[k].d}"><i>${ABILITIES[k].icon}</i>${ABILITIES[k].n}${abCount(c.abs, k) > 1 ? ' ×' + abCount(c.abs, k) : ''}</span>`).join('')}</div>
-    ${STAT_KEYS.map(k => `<div class="cc-row"><span>${STATS[k].icon} ${k}</span><div class="bar"><i style="width:${Math.min(100, st[k] / 12 * 100)}%"></i></div><b class="sv sv${svc(st[k])}">${Math.round(st[k])}${c.actB && c.actB[k] ? `<small class="actb ${c.actB[k] < 0 ? 'neg' : ''}">${c.actB[k] > 0 ? '+' : '−'}${Math.abs(c.actB[k]).toFixed(1)}</small>` : ''}${c.psn && c.psn[k] ? `<small class="actb neg">−${c.psn[k]}</small>` : ''}</b></div>`).join('')}
+    ${STAT_KEYS.map(k => `<div class="cc-row"><span>${STATS[k].icon} ${k}</span><div class="bar"><i style="width:${Math.min(100, st[k] / 12 * 100)}%"></i></div><b class="sv sv${svc(st[k])}">${Math.round(st[k] - ibSum(c.ib, k))}${ibChips(c.ib, k)}${c.actB && c.actB[k] ? `<small class="actb ${c.actB[k] < 0 ? 'neg' : ''}">${c.actB[k] > 0 ? '+' : '−'}${Math.abs(c.actB[k]).toFixed(1)}</small>` : ''}${c.psn && c.psn[k] ? `<small class="actb neg">−${c.psn[k]}</small>` : ''}</b></div>`).join('')}
     ${statusHTML()}`;
 }
 function hudPerks() {
@@ -2407,8 +2424,8 @@ function renderTitle() {
         <button class="btn ghost" data-a="help">📖 TUTORIAL</button>
         <button class="btn ghost" data-a="mute">${muted ? '🔇' : '🔊'}</button>
       </div>
-      <div class="row dbg"><button class="btn mini" data-a="debug">🛠 Debug: dinero infinito y ganar partidos</button>
-        <button class="btn mini" data-a="lab">🧪 Laboratorio de jugadores</button></div>
+      <div class="row title-extra"><button class="btn big pink tx" data-a="mkteam">🛠 CREAR MI EQUIPO</button>
+        <button class="btn big pur tx" data-a="lab">🧪 LAB DE JUGADORES</button></div>
       <div class="row langs nolang">${[['es', 'Español'], ['en', 'English'], ['gl', 'Galego']].map(([c, n]) => `<button class="btn mini lang${LANG === c ? ' on' : ''}" data-a="lang" data-l="${c}">${n}</button>`).join('')}</div>
       ${best ? `<div class="best">Mejor racha: <b>${best}</b> partido${best > 1 ? 's' : ''} ganado${best > 1 ? 's' : ''}</div>` : ''}
     </div>
@@ -2448,7 +2465,7 @@ function renderPick() {
         <h3>${C.n}</h3>
         ${C.lg ? `<div class="tag">${C.lg}</div>` : ''}
         <div class="bias">${bias}${C.best ? ' · ★★★ de inicio' : ''}</div>
-        <div class="prow"><div class="pcaps">${ROLES.map((r, i) => capPreview(i, { code: sel, c1: C.c1, c2: C.c2 }, 34)).join('')}</div><button class="btn ghost" data-a="squad" data-c="${sel}">👥 VESTUARIO</button></div>
+        <div class="prow"><div class="pcaps">${ROLES.map((r, i) => capPreview(i, { code: sel, c1: C.c1, c2: C.c2 }, 34)).join('')}</div><button class="btn ghost" data-a="squad" data-c="${sel}">👥 VESTUARIO</button>${C.custom ? '<button class="btn ghost" data-a="mkteam">✏️ EDITAR</button>' : ''}</div>
         <div class="ft-bars pbars">${statBars(teamAvg(sel).o)}</div>
         </div>
         <div class="popts">
@@ -2567,7 +2584,7 @@ function genShop(rc = CONFIG.rerollCost) {
   wPick(Object.keys(ABILITIES), k => ABILITIES[k].price, 1).forEach(k => items.push({ kind: 'ab', key: k }));
   wPick(CARD_KEYS, k => CARDS[k].price, 2).forEach(k => items.push({ kind: 'item', key: k }));
   shuffle(STAT_KEYS).slice(0, 1).forEach(k => items.push({ kind: 'stat', key: k }));
-  items.push({ kind: 'star', key: 'STAR' });
+  if (Math.random() < 0.22) items.push({ kind: 'star', key: 'STAR' });   // la estrella ya no sale en todas las tiendas
   /* premios gratis de la ruleta (y los que aún no cogiste de la tienda anterior) */
   const keep = (G.freeItems || []).slice().reverse().concat(G.shop ? G.shop.items.filter(i => i.free && !i.bought) : []); G.freeItems = [];
   const base = Math.max(0, items.length - keep.length);
@@ -2670,7 +2687,7 @@ function renderShop(preview) {
 function renderMatch() {
   return `<div class="hud">
     <div id="hud-score" class="scoreboard"></div><div id="hud-money" class="hudmoney"></div><div id="hud-log" class="hudlog"></div><button id="hud-roul" class="shopbtn roulbtn" data-a="mroul" title="Ruleta: apuesta de $1 a $5 por un premio">🎡 RULETA</button><button id="hud-shop" class="shopbtn" data-a="mshop" title="Abrir la tienda en pleno partido (en pleno partido todo cuesta el doble)">🛒 TIENDA</button>
-    <div class="topr">${G.debug ? '<select class="dbgsel" data-d="field" title="Debug: cambiar campo">' + ['normal', ...FIELD_KEYS].map(k => `<option value="${k}" ${M && M.S.field === k ? 'selected' : ''}>${k === 'normal' ? '🌱 Normal' : FIELDS[k].icon + ' ' + FIELDS[k].n}</option>`).join('') + '</select><select class="dbgsel" data-d="ball" title="Debug: cambiar balón">' + ['normal', ...BALL_KEYS].map(k => `<option value="${k}" ${M && M.S.ballType === k ? 'selected' : ''}>${k === 'normal' ? '⚽ Normal' : BALLS[k].icon + ' ' + BALLS[k].n}</option>`).join('') + '</select><button class="btn mini dbg" data-a="dbgwin" title="Debug: ganar el partido">🛠 GANAR</button>' : ''}<div id="hud-perks"></div><button class="btn ghost mini" data-a="menu">☰</button></div>
+    <div class="topr"><div id="hud-perks"></div><button class="btn ghost mini" data-a="menu">☰</button></div>
     <div id="hud-cap" class="capcard"></div>
     <div id="hud-hand" class="hand"></div><div id="hud-ehand" class="ehand"></div>
     <div id="banner" class="banner"></div>
@@ -2755,7 +2772,7 @@ function render() {
   const ui = $('#ui');
   document.body.className = G.screen + (G.lab ? ' lab-on' : '');
   const s = G.screen;
-  ui.innerHTML = s === 'title' ? renderTitle() : s === 'pick' ? renderPick() : s === 'friendly' ? renderFriendly() : s === 'versus' ? renderVersus() : s === 'shop' ? renderShop() : s === 'league' ? renderLeague() : s === 'tour' ? renderTour() : s === 'lgsetup' ? renderLgSetup() : s === 'match' ? renderMatch() : '';
+  ui.innerHTML = s === 'title' ? renderTitle() : s === 'pick' ? renderPick() : s === 'friendly' ? renderFriendly() : s === 'versus' ? renderVersus() : s === 'shop' ? renderShop() : s === 'league' ? renderLeague() : s === 'tour' ? renderTour() : s === 'lgsetup' ? renderLgSetup() : s === 'match' ? renderMatch() : s === 'myteam' && typeof renderMyTeam === 'function' ? renderMyTeam() : '';
   if (s === 'match') { hudScore(); hudCap(); hudPerks(); hudHand(); hudLog(); }
   G.flash = null;
   if (s !== 'title' && s !== 'match' && !G.ro && !ui.querySelector('.p-head')) {
@@ -2771,7 +2788,7 @@ function tipHTML(o) {
   const st = o.st, dev = o.dev || 0, nst = o.stars || 1;
   const now = { POT: `vel. <b>${Math.round(o.vmax)}</b>`, PES: `masa <b>${(+o.m).toFixed(1)}</b>`, PRE: dev > 0 ? `desvío <b>±${(dev * 2).toFixed(0)}°</b>` : `<b>sin desvío</b>`, VIS: `ves el <b>${Math.round(visFrac(st) * 100)}%</b>`, MEN: st.MEN >= 7 ? `<b>${Math.round(Math.min(0.75, 0.2 + (st.MEN - 7) * 0.1) * 100)}%</b> de subir cada stat` : `<b>no sube</b> (hace falta 7+)` };
   return `<div class="tip-h"><b>${o.name}${o.captain ? ' <span class="capt">C</span>' : ''} <small>#${o.num}</small></b><span>${o.role} · <i class="gold">${'★'.repeat(nst)}</i></span></div>
-    ${STAT_KEYS.map(k => `<div class="tip-r"><span class="tk">${STATS[k].icon} ${STATS[k].n}</span><b class="tn sv sv${svc(st[k])}">${Math.round(st[k])}${o.actB && o.actB[k] ? `<small class="actb ${o.actB[k] < 0 ? 'neg' : ''}">${o.actB[k] > 0 ? '+' : '−'}${Math.abs(o.actB[k]).toFixed(1)}</small>` : ''}${o.psn && o.psn[k] ? `<small class="actb neg">−${o.psn[k]}</small>` : ''}</b><span class="tv">${now[k]}</span></div>`).join('')}
+    ${STAT_KEYS.map(k => `<div class="tip-r"><span class="tk">${STATS[k].icon} ${STATS[k].n}</span><b class="tn sv sv${svc(st[k])}">${Math.round(st[k] - ibSum(o.ib, k))}${ibChips(o.ib, k)}${o.actB && o.actB[k] ? `<small class="actb ${o.actB[k] < 0 ? 'neg' : ''}">${o.actB[k] > 0 ? '+' : '−'}${Math.abs(o.actB[k]).toFixed(1)}</small>` : ''}${o.psn && o.psn[k] ? `<small class="actb neg">−${o.psn[k]}</small>` : ''}</b><span class="tv">${now[k]}</span></div>`).join('')}
     ${[...new Set(o.abs || [])].map(k => { const n = abCount(o.abs, k); return `<div class="tip-a"><b>${ABILITIES[k].icon} ${ABILITIES[k].n}${n > 1 ? ' ×' + n : ''}</b> ${ABILITIES[k].d}</div>`; }).join('')}`;
 }
 function showTip(html, x, y) {
@@ -2789,7 +2806,7 @@ function capTip(e) {
   const p = pointerField(e); let hit = null;
   M.w.bodies.forEach(b => { if (b.kind === 'cap' && Math.hypot(b.x - p.x, b.y - p.y) < b.r + 6) hit = b; });
   if (!hit) return hideTip();
-  showTip(tipHTML({ name: hit.name, num: hit.num, role: ROLES.find(r => r.k === hit.role).n + (hit.team === 0 ? '' : ' (rival)'), stars: hit.stars, abs: hit.abs, st: hit.st, actB: hit.actB, psn: hit.psn, captain: hit.captain, vmax: hit.vmax, m: hit.m, r: hit.r, dev: (hit.poison ? POISON_DEV : hit.dev) * 180 / Math.PI }), e.clientX, e.clientY);
+  showTip(tipHTML({ name: hit.name, num: hit.num, role: ROLES.find(r => r.k === hit.role).n + (hit.team === 0 ? '' : ' (rival)'), stars: hit.stars, abs: hit.abs, st: hit.st, ib: hit.ib, actB: hit.actB, psn: hit.psn, captain: hit.captain, vmax: hit.vmax, m: hit.m, r: hit.r, dev: (hit.poison ? POISON_DEV : hit.dev) * 180 / Math.PI }), e.clientX, e.clientY);
 }
 document.addEventListener('mousemove', e => {
   if (G.screen === 'pick') {
@@ -2798,11 +2815,7 @@ document.addEventListener('mousemove', e => {
     const d = playerTeam(cv2.dataset.code)[+cv2.dataset.i], inf = capInfo(d);
     return showTip(tipHTML({ name: d.name, num: d.num, role: ROLES[+cv2.dataset.i].n, stars: d.stars, abs: d.abs, st: inf.st, vmax: inf.vmax, m: inf.mass, r: inf.r, dev: inf.dev }), e.clientX, e.clientY);
   }
-  if (G.screen !== 'shop') return;
-  const f = e.target.closest && e.target.closest('[data-tipi]');
-  if (!f) return hideTip();
-  const c = G.caps[+f.dataset.tipi], inf = capInfo(c);
-  showTip(tipHTML({ name: c.name, num: c.num, role: ROLES.find(r => r.k === c.role).n, stars: c.stars, abs: c.abs, st: inf.st, vmax: inf.vmax, m: inf.mass, r: inf.r, dev: inf.dev }), e.clientX, e.clientY);
+  /* en el vestuario (propio y rival) la ficha del jugador ya muestra todo: no se enseña modal al pasar el ratón */
 });
 
 /* ===================== ACCIONES ===================== */
@@ -2941,7 +2954,6 @@ const ACTIONS = {
   psort(el) { PICK_SORT = el.dataset.k; render(); sfx.click(); },
   psel(el) { G.pickSel = el.dataset.c; render(); sfx.click(); },
   go(el) { newRun(el.dataset.c); },
-  debug() { const sel = $('#dbgRound'); G = { screen: 'pick', pickSel: 'ESP', debug: true, startRound: Math.max(0, (sel ? +sel.value : 1) - 1) }; render(); },
   play() { startMatch(); },
   rival() { G.roMatch = G.screen === 'match'; G.roBak = { caps: G.caps, code: G.code, tab: G.shopTab }; G.caps = G.enemyDefs; G.code = G.enemy; G.ro = true; G.shopTab = 'team'; G.screen = 'shop'; render(); },
   rivalback() { if (G.roBak) { G.caps = G.roBak.caps; G.code = G.roBak.code; G.shopTab = G.roBak.tab; G.roBak = null; } G.ro = false; if (G.roMatch) { G.roMatch = false; G.screen = 'match'; render(); syncAfterShop(); ACTIONS.menu(); return; } G.screen = 'versus'; render(); },
@@ -2976,7 +2988,7 @@ const ACTIONS = {
   menu() {
     if ($('#pause')) return;
     const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'pause';
-    ov.innerHTML = '<div class="res"><h2>PAUSA</h2><div class="row"><button class="btn big" data-a="resume">SEGUIR</button>' + (M && M.run && !M.so ? '<button class="btn big gold" data-a="mshop" ' + (M.phase === 'aim' && M.human[M.turn] ? '' : 'disabled title="Solo en el turno propio, con el balón parado"') + '>🛒 TIENDA</button>' : '') + (G.enemyDefs && M && !M.lab ? '<button class="btn big alt" data-a="rival">👁 VESTUARIO RIVAL</button>' : '') + '<button class="btn big pen" data-a="restart">🔄 REINICIAR PARTIDO</button>' + (G.debug ? '<button class="btn big dbg" data-a="dbgwin">🛠 GANAR PARTIDO (debug)</button>' : '') + '<button class="btn ghost" data-a="title">ABANDONAR</button></div></div>';
+    ov.innerHTML = '<div class="res"><h2>PAUSA</h2><div class="row"><button class="btn big" data-a="resume">SEGUIR</button>' + (M && M.run && !M.so ? '<button class="btn big gold" data-a="mshop" ' + (M.phase === 'aim' && M.human[M.turn] ? '' : 'disabled title="Solo en el turno propio, con el balón parado"') + '>🛒 TIENDA</button>' : '') + (G.enemyDefs && M && !M.lab ? '<button class="btn big alt" data-a="rival">👁 VESTUARIO RIVAL</button>' : '') + '<button class="btn big pen" data-a="restart">🔄 REINICIAR PARTIDO</button>'  + '<button class="btn ghost" data-a="title">ABANDONAR</button></div></div>';
     document.body.appendChild(ov);
   },
   replay() { startReplay(); },
@@ -2991,7 +3003,6 @@ const ACTIONS = {
   },
   restart() { const p = $('#pause'); if (p) p.remove(); M.seq++; clearTimeout(M.goalTimer); ['goalbar', 'replaybar'].forEach(i => { const e = $('#' + i); if (e) e.remove(); }); M.S.pens ? startShootout() : M.run ? startMatch() : startFriendly(); },
   frpens() { FR.kind = FR.kind === 'pens' ? 'match' : 'pens'; render(); sfx.click(); },
-  dbgwin() { if (!M || !G.debug || M.over) return; const p = $('#pause'); if (p) p.remove(); ['goalbar', 'replaybar'].forEach(i => { const e = $('#' + i); if (e) e.remove(); }); if (cv) cv.style.filter = ''; clearTimeout(M.goalTimer); M.replay = null; M.pen = null; M.score[0] = Math.max(M.score[0], M.score[1] + 1); M.goals[0] = Math.max(M.goals[0], 1); M.cash += 5; endMatch(); },
   resume() { const p = $('#pause'); if (p) p.remove(); },
 };
 /* el primer enfrentamiento puede venir del modo debug con ronda inicial */
@@ -3012,16 +3023,6 @@ document.addEventListener('input', e => {
   const st = document.querySelector('[data-a="frstart2"]'); if (st && FR.kind !== 'pens') st.textContent = (FR.money[0] > 0 || (FR.mode === 'j2' && FR.money[1] > 0)) ? '🛒 A LA TIENDA ▶' : '¡A JUGAR!';
 });
 document.addEventListener('change', e => {
-  const d = e.target.dataset && e.target.dataset.d;
-  if (d && M && G.debug) {
-    const v = e.target.value, w = M.w;
-    if (d === 'field') { if (v === 'normal') clearField(w); else applyField(w, v); M.S.field = v; pitchKey = ''; }
-    else if (d === 'ball') {
-      M.S.ballType = v;
-      w.balls.forEach(b => { const nb = ballBody(v); ['x', 'y', 'vx', 'vy', 'id', 'ox', 'oy', 'ang', 'lastTeam', 'lastX'].forEach(p => { if (b[p] !== undefined) nb[p] = b[p]; }); nb.chg = 0; Object.keys(b).forEach(p => delete b[p]); Object.assign(b, nb); });
-    }
-    hudScore(); e.target.blur(); return;
-  }
   const k = e.target.dataset && e.target.dataset.s; if (!k) return;
   FR[k] = e.target.value;
   if (k === 'lg0') FR.c0 = LEAGUES.find(l => l.k === FR.lg0).codes[0];

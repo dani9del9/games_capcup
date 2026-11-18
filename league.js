@@ -374,7 +374,7 @@ function mrPrize(k, b, amt) {
     const key = mrW(pool, x => PERKS[x].price, b); return { item: { kind: 'perk', key, free: true }, txt: '🏅 ¡Premio <b>reliquia</b>!' };
   }
   if (k === 'ab') { const key = mrW(Object.keys(ABILITIES), x => ABILITIES[x].price, b); return { item: { kind: 'ab', key, free: true }, txt: '🧩 ¡Premio <b>habilidad</b>!' }; }
-  if (b >= 4 && Math.random() < (b - 3) * 0.35) return { item: { kind: 'star', key: 'STAR', free: true }, txt: '⭐ ¡Premio <b>estrella</b>!' };
+  if (b >= 4 && Math.random() < (b - 3) * 0.14) return { item: { kind: 'star', key: 'STAR', free: true }, txt: '⭐ ¡Premio <b>estrella</b>!' };
   const key = pick(STAT_KEYS); return { item: { kind: 'stat', key, free: true }, txt: '💪 ¡Premio <b>mejora</b>!' };
 }
 function mrDraw() {

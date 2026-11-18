@@ -278,7 +278,7 @@ const TSTEPS = [
   { t: 'Mentalidad 🔥', ic: '🔥', cls: 'wide', body: () => `
     <div class="t-two"><div><ul class="t-list">
       <li>Cada jugador tiene una 5ª estadística: la <b>MENTALIDAD</b>.</li>
-      <li>Con <b>7 o más</b>, el jugador puede empezar con una mejora repartida entre potencia, peso, precisión y visión: <b>hasta +0.5 con mentalidad 8</b> en total (al azar, puede ser menos). Con <b>11 siempre +1</b> y con <b>12 siempre +2</b>. Con <b>menos de 2</b> ocurre al revés: puede perder hasta −0.5.</li>
+      <li>Mentalidad 5: no cambia nada. Con 6 o más, el jugador puede empezar con una mejora repartida entre potencia, peso, precisión y visión: hasta +0.3 con 6 y hasta +0.5 con 8 en total (al azar, puede ser menos). Con 11 siempre +1 y con 12 siempre +2. Con menos de 5 ocurre al revés: puede perder hasta −0.3 (hasta −0.5 con 2 o menos).</li>
       <li>Si te toca, el jugador luce un <b>reborde arcoíris</b> (más opaco cuanto más ha subido) y ves <span class="g">+0.7</span> junto al valor.</li>
       <li>Durante el partido cambia: <b>meter goles</b> la sube (más al goleador, algo a todo el equipo).</li>
       <li>Un <b>gol en propia</b> o ir perdiendo por <b>3 o más goles</b> la baja (hasta −1), y verás <span class="r">−0.5</span> en rojo.</li>
@@ -348,10 +348,12 @@ const TSTEPS = [
 
   { t: 'Habilidades de jugador', ic: '🎖️', cls: 'cards', body: () => `
     <p class="t-lead">Las <b>habilidades</b> se ponen a UN jugador (necesitas huecos: dependen de sus ⭐). Salen como iconos alrededor del jugador:</p>
-    <div class="t-cards">${tabil('canon', 'Tiros más rápidos')}${tabil('bulldozer', 'Masa ×1.7')}${tabil('iman', 'Atrae el balón')}${tabil('instinto', 'Dispara tras un pase')}</div>
+    <div class="t-cards">${tabil('canon', '+30% de potencia por copia')}${tabil('bulldozer', 'Masa ×1.7')}${tabil('iman', 'Atrae el balón')}${tabil('instinto', 'Dispara tras un pase')}</div>
     <p class="t-lead">Puedes repetir la misma habilidad hasta <b>3 veces</b> en un jugador (no tienen niveles, se suman las copias). Las nuevas:</p>
-    <div class="t-cards">${tabil('motiv', 'Una stat al máximo')}${tabil('control', 'Amortigua el balón')}${tabil('piedra', 'No la mueve nadie')}${tabil('hierro', 'Inmune a veneno y hielo')}${tabil('goat', 'Probabilidad de todo a 12')}${tabil('arana', 'Corre hacia el balón')}</div>
-    ${ex('Un portero con <b>Gigante</b> ocupa más portería. Un delantero con <b>Cañonazo</b> llega al otro campo. <b>🎖️ Gran Capitán</b> da +2 a todo a su equipo durante las 3 primeras rondas. <b>Araña</b>: 1 copia se acerca poco al balón, 2 bastante y 3 mucho; se para cuando alguien lo toca. Solo reacciona si el balón está a menos de 3 veces su tamaño. Con 3 <b>GOAT</b> el balón va siempre a portería.')}` },
+    <div class="t-cards">${tabil('motiv', 'Segunda mitad: sube todo')}${tabil('control', 'Amortigua el balón')}${tabil('piedra', 'No la mueve nadie')}${tabil('hierro', 'Inmune a veneno y hielo')}${tabil('goat', 'Probabilidad de todo a 12')}${tabil('arana', 'Corre hacia el balón')}</div>
+    <p class="t-lead">Y los que <b>mejoran o fastidian durante el partido</b> (todo se reinicia al cambiar de partido):</p>
+    <div class="t-cards">${tabil('capitan', 'Compañeros +N en una stat')}${tabil('corazon', 'Cada turno mejora una stat')}${tabil('vampiro', 'Resta stats al rival')}${tabil('demonio', 'Tira solo tras rebote rival')}${tabil('diamante', 'Sus goles dan más dinero')}</div>
+    ${ex('Un portero con <b>Gigante</b> ocupa más portería. Un delantero con <b>Cañonero</b> pega un 30% más fuerte por copia. <b>🎖️ Gran Capitán</b>: al empezar el partido todos sus compañeros ganan +1 (con 2 copias +2, con 3 +3) en una estadística al azar, y lo verás en su ficha. <b>✨ Motivado</b>: en la segunda mitad sube todas sus estadísticas +1, +2 o +3. <b>🩹 Salud de hierro</b>: 1 copia protege la primera mitad, 2 todo el partido, 3 a todo el equipo. <b>❤️ Corazón</b> sube una estadística cada turno. <b>🧛 Vampiro</b> resta estadísticas al rival que toca antes del balón. <b>😈 Demonio</b> tira a portería cuando le llega un balón tocado por el rival (dispersión 30%, 20% o 5%). <b>💎 Diamante</b>: sus goles dan $1, $2 o $4 más. <b>Araña</b>: 1 copia se acerca poco al balón, 2 bastante y 3 mucho; se para cuando alguien lo toca. Solo reacciona si el balón está a menos de 3 veces su tamaño. Con 3 <b>GOAT</b> el balón va siempre a portería.')}` },
 
   { t: 'Campos y balones especiales', ic: '🌍', cls: 'wide', body: () => `
     <p class="t-lead">A veces el campo o el balón <b>no son normales</b>. Cambian cómo se juega:</p>
