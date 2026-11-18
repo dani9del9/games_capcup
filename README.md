@@ -299,3 +299,4 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Móviles: la interfaz usa el tamaño visible real (no 100vh), la tienda hace scroll completo con la barra inferior sólida y las cartas tienen más alto para que quepa el texto.
 - Portada: las chapas del título mantienen la proporción y se ven redondas (antes se aplanaban en pantallas bajas/móviles).
 - Móvil: comodines de la mano de la partida más pequeños; icono azul ⛶ fijo para volver a pantalla completa mientras no se esté en ella (solo móviles).
+- Móvil: si estás apuntando con un jugador y tocas con un segundo dedo se cancela la puntería (como el clic derecho en PC); pellizco con dos dedos para acercar/alejar y mover el campo (zoom 1x–2.6x).

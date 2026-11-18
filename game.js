@@ -565,6 +565,7 @@ function shootoutKick(team, ok) {
   else setTimeout(() => { if (M && M.so && G.screen === 'match') shootoutNext(); }, 1700);
 }
 function beginMatch(S) {
+  ZM.k = 1; ZM.x = 0; ZM.y = 0; TP.clear(); pinch = null;
   const w = makeWorld(S.defs[0], S.defs[1], { mods0: S.mods[0], mods1: S.mods[1], gwL: S.gwL || FIELD.gw, gwR: S.gwR, field: S.field, ballType: S.ballType, nBalls: S.nBalls });
   w.noGoal = true; w.ngOff = [false, false];
   const starter = (S.so || S.lab) ? 0 : (Math.random() < 0.5 ? 0 : 1);
@@ -631,7 +632,28 @@ function capById(id) { return M.w.bodies.find(b => b.id === id); }
 
 function pointerField(e) {
   const r = cv.getBoundingClientRect();
-  return { x: ((e.clientX - r.left) / UK - view.ox) / view.S, y: ((e.clientY - r.top) / UK - view.oy) / view.S };
+  return { x: (((e.clientX - r.left) / UK - ZM.x) / ZM.k - view.ox) / view.S, y: (((e.clientY - r.top) / UK - ZM.y) / ZM.k - view.oy) / view.S };
+}
+/* zoom con dos dedos (solo táctil): cámara ZM aplicada al dibujar; k=1 es la vista normal */
+const ZM = { k: 1, x: 0, y: 0 }, TP = new Map();
+let pinch = null;
+function clampZoom() {
+  ZM.k = Math.max(1, Math.min(2.6, ZM.k));
+  if (ZM.k < 1.03) { ZM.k = 1; ZM.x = 0; ZM.y = 0; return; }
+  ZM.x = Math.max(view.w * (1 - ZM.k), Math.min(0, ZM.x)); ZM.y = Math.max(view.h * (1 - ZM.k), Math.min(0, ZM.y));
+}
+function pinchStart() {
+  const [a, b] = [...TP.values()], r = cv.getBoundingClientRect();
+  pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, mx: ((a.x + b.x) / 2 - r.left) / UK, my: ((a.y + b.y) / 2 - r.top) / UK, k: ZM.k, x: ZM.x, y: ZM.y };
+}
+function pinchMove() {
+  if (!pinch || TP.size < 2) return;
+  const [a, b] = [...TP.values()], r = cv.getBoundingClientRect();
+  const d = Math.hypot(a.x - b.x, a.y - b.y) || 1, mx = ((a.x + b.x) / 2 - r.left) / UK, my = ((a.y + b.y) / 2 - r.top) / UK;
+  const k = Math.max(1, Math.min(2.6, pinch.k * d / pinch.d));
+  // el punto del mundo bajo el centro inicial queda bajo el centro actual
+  const wx = (pinch.mx - pinch.x) / pinch.k, wy = (pinch.my - pinch.y) / pinch.k;
+  ZM.k = k; ZM.x = mx - wx * k; ZM.y = my - wy * k; clampZoom();
 }
 const canShoot = () => M && M.phase === 'aim' && M.human[M.turn];
 /* reliquia Reflejos: se pueden usar comodines mientras la CPU se prepara para tirar */
@@ -917,6 +939,10 @@ function applyBoost(c) { if (M.boostId === c.id) { let f = M.boostMul; if (M.boo
 function onDown(e) {
   if (!M || G.screen !== 'match') return;
   if (e.button === 2) { cancelAim(); return; }
+  if (e.pointerType === 'touch') {
+    TP.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (TP.size >= 2) { if (M.drag) cancelAim(); if (TP.size === 2) pinchStart(); return; }   // segundo dedo: cancela la puntería y permite zoom
+  }
   const p = pointerField(e); M.ptr = p;
   if (M.lab && !M.picking && typeof labPick === 'function') labPick(p);
   if (M.phase === 'pen') { if (M.pen && M.pen.human) penStop(); else gkStop(); return; }
@@ -934,6 +960,10 @@ function onDown(e) {
 }
 function onMove(e) {
   if (!M || G.screen !== 'match') return;
+  if (e.pointerType === 'touch' && TP.has(e.pointerId)) {
+    TP.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (TP.size >= 2) { pinchMove(); return; }
+  }
   capTip(e);
   const p = pointerField(e); M.ptr = p;
   if (M.drag) updateAim();
@@ -943,7 +973,8 @@ function onMove(e) {
     M.hover = h; cv.style.cursor = h != null ? 'grab' : (M.phase === 'pen' ? 'pointer' : 'default');
   }
 }
-function onUp() {
+function onUp(e) {
+  if (e && e.pointerType === 'touch') { TP.delete(e.pointerId); if (TP.size < 2) pinch = null; if (e.type === 'pointercancel' && M && M.drag) cancelAim(); }
   hideTip();
   if (!M || !M.drag) return;
   const d = M.drag; M.drag = null; M.aim = null;
@@ -1812,10 +1843,11 @@ function draw(dt) {
   const { S, dpr, ox, oy } = view;
   cx.setTransform(1, 0, 0, 1, 0, 0);
   cx.fillStyle = '#070b10'; cx.fillRect(0, 0, cv.width, cv.height);
+  cx.setTransform(ZM.k, 0, 0, ZM.k, ZM.x * dpr, ZM.y * dpr);
   cx.drawImage(pitchCache, (ox - FIELD.MX * S) * dpr, (oy - FIELD.MY * S) * dpr);
   let sx = 0, sy = 0;
   if (fx.shake > 0) { sx = (Math.random() - 0.5) * 10 * fx.shake; sy = (Math.random() - 0.5) * 10 * fx.shake; }
-  cx.setTransform(dpr * S, 0, 0, dpr * S, dpr * (ox + sx), dpr * (oy + sy));
+  cx.setTransform(dpr * S * ZM.k, 0, 0, dpr * S * ZM.k, dpr * (ZM.k * (ox + sx) + ZM.x), dpr * (ZM.k * (oy + sy) + ZM.y));
   const w = M.w, bodies = w.bodies;
   if (w.dream) drawDynGoals(w, false);
   if (w.pud) drawPuddles(w);
@@ -2173,11 +2205,11 @@ function drawFog() {
   const w = M.w, f = QUAL ? 0.33 : 0.5, W = Math.ceil(cv.width * f), H = Math.ceil(cv.height * f);
   if (!fogCv) fogCv = document.createElement('canvas');
   if (fogCv.width !== W || fogCv.height !== H) { fogCv.width = W; fogCv.height = H; }
-  const c = fogCv.getContext('2d'), k = view.dpr * f * view.S, t = performance.now() / 1000;
+  const c = fogCv.getContext('2d'), k = view.dpr * f * view.S * ZM.k, t = performance.now() / 1000;
   c.globalCompositeOperation = 'source-over'; c.clearRect(0, 0, W, H);
   c.fillStyle = 'rgba(196,208,220,.95)'; c.fillRect(0, 0, W, H);
   c.globalCompositeOperation = 'destination-out';
-  const hole = (x, y, r) => { const X = (view.ox + x * view.S) * view.dpr * f, Y = (view.oy + y * view.S) * view.dpr * f, R = r * k; const g = c.createRadialGradient(X, Y, R * 0.35, X, Y, R); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.beginPath(); c.arc(X, Y, R, 0, Math.PI * 2); c.fill(); };
+  const hole = (x, y, r) => { const X = (ZM.k * (view.ox + x * view.S) + ZM.x) * view.dpr * f, Y = (ZM.k * (view.oy + y * view.S) + ZM.y) * view.dpr * f, R = r * k; const g = c.createRadialGradient(X, Y, R * 0.35, X, Y, R); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.beginPath(); c.arc(X, Y, R, 0, Math.PI * 2); c.fill(); };
   w.bodies.forEach(b => { if (b.kind === 'ball') hole(b.x, b.y, 130); else if (M.human[b.team]) hole(b.x, b.y, 105); });
   c.globalCompositeOperation = 'source-over';
   const tr = cx.getTransform(); cx.setTransform(1, 0, 0, 1, 0, 0); cx.drawImage(fogCv, 0, 0, cv.width, cv.height); cx.setTransform(tr);
@@ -3013,6 +3045,7 @@ function boot() {
   cv.addEventListener('pointermove', onMove);
   cv.addEventListener('contextmenu', e => { e.preventDefault(); cancelAim(); });
   window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointercancel', onUp);
   resize(); render();
   requestAnimationFrame(frame);
 }
