@@ -311,3 +311,4 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Mentalidad: ahora afecta desde 6 (mejora) y por debajo de 5 (pérdida); 5 neutra. Lab: al añadir/quitar items de equipo (Gran Capitán…) se recalcula todo el equipo. Botón Crear mi equipo en rosa.
 - Editor de equipo: rejilla ordenada, chapas con un solo color (local/visitante), bandera con tipo + nº de colores (1-5) y pickers según el nº; clic en la bandera abre el selector de ese color.
 - Vestuario (propio y rival): ya no sale el modal de info al pasar el ratón sobre un jugador.
+- Vestuario: al pasar el ratón sobre un item sale un modal pequeño que lo explica.

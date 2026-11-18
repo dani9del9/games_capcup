@@ -2636,7 +2636,7 @@ function renderShop(preview) {
       <div class="fut-abs">${Array.from({ length: 3 }, (_, j) => {
         const slots = Math.max(abSlots(c.stars || 1), c.abs.length), k = c.abs[j];
         if (j >= slots) return `<div class="abslot locked" title="Se desbloquea con ${j === 1 ? '3' : '5'} estrellas">🔒<small>${j === 1 ? '3' : '5'}★</small></div>`;
-        if (k) return `<div class="abslot on" title="${ABILITIES[k].n}: ${ABILITIES[k].d}"><i>${ABILITIES[k].icon}</i><small>${ABILITIES[k].n}</small>${pend ? '' : `<button class="abx" data-a="rmab" data-i="${i}" data-j="${j}" title="Vender habilidad por $${Math.floor(ABILITIES[k].price / 2)}">+$${Math.floor(ABILITIES[k].price / 2)}</button>`}</div>`;
+        if (k) return `<div class="abslot on" data-itip="${k}"><i>${ABILITIES[k].icon}</i><small>${ABILITIES[k].n}</small>${pend ? '' : `<button class="abx" data-a="rmab" data-i="${i}" data-j="${j}" title="Vender habilidad por $${Math.floor(ABILITIES[k].price / 2)}">+$${Math.floor(ABILITIES[k].price / 2)}</button>`}</div>`;
         return `<div class="abslot empty" title="Hueco libre: compra una habilidad"><i>＋</i><small>libre</small></div>`;
       }).join('')}</div>
       <div class="fut-stats">${STAT_KEYS.map(k => {
@@ -2815,7 +2815,12 @@ document.addEventListener('mousemove', e => {
     const d = playerTeam(cv2.dataset.code)[+cv2.dataset.i], inf = capInfo(d);
     return showTip(tipHTML({ name: d.name, num: d.num, role: ROLES[+cv2.dataset.i].n, stars: d.stars, abs: d.abs, st: inf.st, vmax: inf.vmax, m: inf.mass, r: inf.r, dev: inf.dev }), e.clientX, e.clientY);
   }
-  /* en el vestuario (propio y rival) la ficha del jugador ya muestra todo: no se enseña modal al pasar el ratón */
+  /* en el vestuario (propio y rival) la ficha del jugador ya muestra todo: solo se explica el item sobre el que estás */
+  if (G.screen !== 'shop') return;
+  const it = e.target.closest && e.target.closest('[data-itip]');
+  if (!it) return hideTip();
+  const ab = ABILITIES[it.dataset.itip]; if (!ab) return hideTip();
+  showTip(`<div class="tip-h"><b>${ab.icon} ${ab.n}</b></div><div class="tip-a" style="font-size:15px;line-height:1.4;white-space:normal;max-width:300px">${ab.d}</div>`, e.clientX, e.clientY);
 });
 
 /* ===================== ACCIONES ===================== */
