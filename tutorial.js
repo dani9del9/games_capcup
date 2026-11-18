@@ -319,15 +319,15 @@ const TSTEPS = [
       <li>Cada tirada extra en el mismo partido sube $1 el rango: la primera va de $1 a $5, la segunda de $2 a $6, la tercera de $3 a $7… La calidad del premio depende de la posición en el deslizador, no del precio.</li>
       <li>Elige con el deslizador cuánto <b>apuestas: de $1 a $5</b>. Al pulsar <b>TIRAR</b> se te cobra y la ruleta gira.</li>
       <li>Tiene <b>8 casillas</b>: <b>💰 dinero</b>, <b>🃏 comodín</b>, <b>🏅 reliquia</b>, <b>💪 mejora de jugador</b>, <b>🧩 habilidad</b> y casillas de <b>❌ NADA</b>.</li>
-      <li><b>Cuanto más apuestas, mejor premio</b>: los iconos de comodín, reliquia, mejora y habilidad llevan <b>★1 a ★5</b> y brillan más. Con más estrellas salen cartas más raras y de más nivel (con ★5 hasta nivel 3, y puede tocar una Estrella).</li>
+      <li><b>Cuanto más apuestas, mejor premio</b>: los iconos de comodín, reliquia, mejora y habilidad llevan <b>★1 a ★5</b> y brillan más. Con más estrellas salen cartas más raras (con ★5 puede tocar una Estrella). Las cartas no tienen niveles.</li>
       <li>Las casillas de <b>NADA</b> son <b>2</b> si apuestas $1, <b>1</b> con $2 o $3 y <b>ninguna</b> con $4 o más.</li>
-      <li>Al parar te muestra el premio. El dinero se suma al instante. Lo demás es <b>GRATIS</b>: pulsa <b>COGER PREMIO</b> y en el vestuario colocas la mejora en un jugador, o añades el comodín o la reliquia a tu barra (si no tienes hueco, <b>vende</b> uno para hacerlo).</li>
+      <li>Al parar te muestra el premio. El dinero se suma al instante y el <b>dinero actual</b> del cuadro se actualiza con lo ganado o perdido. Lo demás es <b>GRATIS</b>: pulsa <b>COGER PREMIO</b> y en el vestuario colocas la mejora en un jugador, o añades el comodín o la reliquia a tu barra (si no tienes hueco, <b>vende</b> uno para hacerlo).</li>
       <li>Después puedes <b>seguir jugando</b>. La <b>✕</b> de la esquina cierra la ruleta y continúa el partido normal.</li>
     </ul></div>
     <div class="t-demo"><div class="shopmock"><span>🎡 Apuesta <b>$1</b> → 2 casillas de NADA</span><span>🎡 Apuesta <b>$3</b> → 1 casilla de NADA</span><span>🎡 Apuesta <b>$5</b> → sin NADA y premios ★5</span></div><small>Más dinero = menos NADA y mejores premios.</small></div></div>` },
 
   { t: 'Comodines (1/2): tiros', ic: '🃏', cls: 'cards', body: () => `
-    <p class="t-lead">Las <b>cartas comodín</b> se usan en tu turno (clic en la carta) y <b>se gastan</b> al usarlas. Estas dan <b>tiros</b> o quitan tiros al rival:</p>
+    <p class="t-lead">Las <b>cartas comodín</b> se usan en tu turno (clic en la carta) y <b>se gastan</b> al usarlas; si ya usaste una, <b>desaparece de la lista</b> también en la tienda y en el resto del partido. Los comodines de la partida (tuyos o de la CPU) se aplican <b>después de pulsar ACEPTAR</b> en el aviso que explica su efecto. Estas dan <b>tiros</b> o quitan tiros al rival:</p>
     <div class="t-cards">${tcard('doble', 1, 'Tiras dos veces seguidas')}${tcard('triple', 1, '¡Y a la tercera!')}${tcard('silbato', 1, 'El rival se queda sin turno')}</div>
     ${ex('Vas 0-1 y te quedan pocos tiros. Usas <b>Jugada doble</b>: tiras con un jugador, y sin esperar al rival, tiras otra vez. Si el 2º tiro es gol, empatas. Con el <b>Silbato</b> el rival pierde su siguiente turno y tú juegas dos veces.')}` },
 
@@ -343,8 +343,8 @@ const TSTEPS = [
 
   { t: 'Reliquias', ic: '🏅', cls: 'cards', body: () => `
     <p class="t-lead">Las <b>reliquias</b> son mejoras <b>permanentes</b>: duran toda la partida y funcionan solas. Tienes 4 huecos:</p>
-    <div class="t-cards">${tperk('hinchada', 'Más potencia siempre')}${tperk('ventaja', 'Empiezas 1-0')}${tperk('botas', 'Más dinero por gol')}${tperk('goleada', '+$1 por gol de diferencia')}${tperk('bolsillo', '+1 hueco de comodín')}${tperk('rebajas', 'Comodines a mitad de precio')}</div>
-    ${ex('Con <b>Hinchada</b> todos tus jugadores pegan un 12% más fuerte en todos los partidos. Si compras <b>Ventaja de oro</b> y <b>Botas de oro</b>, empiezas ganando y cada gol te da más dinero. ¡Combínalas! <b>Guantes</b>: el portero atrae el balón durante las jugadas del rival. <b>Sangre fría</b>: todos tus penaltis son gol, aunque la barra no pare en verde. <b>Multiportero</b>: el jugador más cercano a tu portería crece un 30% (se recalcula cada turno).')}` },
+    <div class="t-cards">${tperk('hinchada', 'Más potencia siempre')}${tperk('ventaja', 'Empiezas 1-0')}${tperk('botas', 'Más dinero por gol')}${tperk('goleada', '+$1 por gol de diferencia')}${tperk('bolsillo', '+1 hueco de comodín')}${tperk('rebajas', 'Comodines a mitad de precio')}${tperk('reflejos', 'Comodines también en el turno rival')}</div>
+    ${ex('Con <b>Hinchada</b> todos tus jugadores pegan un 12% más fuerte en todos los partidos. Si compras <b>Ventaja de oro</b> y <b>Botas de oro</b>, empiezas ganando y cada gol te da más dinero. ¡Combínalas! <b>Reflejos</b>: puedes usar tus comodines también durante el turno del rival, justo antes de que tire. <b>Guantes</b>: el portero atrae el balón durante las jugadas del rival. <b>Sangre fría</b>: todos tus penaltis son gol, aunque la barra no pare en verde. <b>Multiportero</b>: el jugador más cercano a tu portería crece un 30% (se recalcula cada turno).')}` },
 
   { t: 'Habilidades de jugador', ic: '🎖️', cls: 'cards', body: () => `
     <p class="t-lead">Las <b>habilidades</b> se ponen a UN jugador (necesitas huecos: dependen de sus ⭐). Salen como iconos alrededor del jugador:</p>
@@ -367,6 +367,22 @@ const TSTEPS = [
       <li>Hay penaltis por <b>falta en el área</b>, en <b>tandas</b> tras la prórroga y en el modo amistoso.</li>
       <li class="t-tip">Prueba los dos papeles aquí a la derecha. Sube y baja la precisión para ver cómo cambia el verde.</li></ul>` },
 
+  { t: 'Reglas y detalles del partido', ic: '📜', cls: 'wide', body: () => `
+    <div class="t-two"><div><h4>Juego</h4><ul class="t-list">
+      <li>🚩 <b>Falta</b>: si el tiro termina sin que nadie toque el balón (ni rival ni tú), o tocas antes a un rival, se pita falta. Dentro del <b>área</b> es <b>penalti</b>; fuera del área, nunca.</li>
+      <li>📹 Al pitar un penalti, el aviso incluye el botón <b>Ver repetición</b>.</li>
+      <li>⚽ Con <b>varios balones</b>, las flechas de puntería (blanca y roja) toman como referencia el balón <b>más cercano a la línea recta</b> del tiro.</li>
+      <li>🧤 <b>Control de balón</b> (habilidad): para el balón en seco tanto si viene de un tiro rival como de tu propia jugada.</li>
+      <li>🔴 Con la <b>pelota pequeña</b> no entra gol si la portería tiene la barrera roja.</li>
+      <li>🔄 <b>Intercambio total</b>: los jugadores de un equipo pasan a las posiciones exactas del otro, y viceversa.</li>
+      <li>🏁 Al terminar el partido sale el cartel <b>FINAL</b> y el árbitro pita dos veces.</li>
+    </ul></div><div><h4>Interfaz</h4><ul class="t-list">
+      <li>🛒 En la tienda a mitad de partido, los comodines que ya usaste no aparecen.</li>
+      <li>✅ El botón <b>Continuar</b> tras un gol tiene fondo de color.</li>
+      <li>🧪 En el <b>laboratorio</b>: <b>Repetir tiro</b> devuelve balón y jugadores a las posiciones previas al último tiro.</li>
+      <li>📱 En móvil los comodines de la mano son más pequeños para no tapar el campo, y el juego se abre a <b>pantalla completa</b> (te lo pregunta).</li>
+    </ul></div></div>` },
+
   { t: 'Modos de juego', ic: '🏆', cls: 'wide', body: () => `
     <div class="t-modes">
       <div><h4>🏆 Torneo</h4>Antes de empezar eliges los <b>turnos por equipo</b> y si hay <b>fase de grupos</b> (grupos de 4: pasan los 2 primeros y se juega desde Octavos). Después: <b>Octavos, Cuartos, Semis y Final</b>; al ganar la final eres <b>CAMPEÓN</b> 🏆 y se acaba el torneo. Si pierdes, se acaba, pero en el cuadro puedes pulsar <b>⏩ SIMULAR</b> para ver cómo habrían acabado el resto de partidos y los goleadores. Mira el <b>🏆 CUADRO</b> con los otros partidos y los goleadores (los resultados salen al acabar tu partido). El rival también tiene comodines y los ves arriba a la derecha.</p></div>
@@ -379,6 +395,7 @@ const TSTEPS = [
     <div class="t-two"><div><h4>Controles</h4><ul class="t-list">
       <li>🖱️ <b>Arrastrar</b> un jugador hacia atrás y soltar = tirar.</li>
       <li>🖱️ <b>Clic derecho</b> = cancelar el tiro.</li>
+      <li>📱 <b>Móvil</b>: toca con un <b>segundo dedo</b> mientras apuntas para cancelar y elegir otro jugador. <b>Pellizca</b> con dos dedos para acercar/alejar el campo (y arrastra para moverlo). Si no estás en pantalla completa, sale un icono azul ⛶ para volver.</li>
       <li>⌨️ ${KEYS('ESPACIO')} / clic = parar la flecha en penaltis.</li>
       <li>🛒 <b>TIENDA</b>: compra en mitad del partido (precio doble).</li>
       <li>🎡 <b>RULETA</b>: apuesta $1–$5 en tu turno por premios.</li>
