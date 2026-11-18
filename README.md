@@ -298,3 +298,4 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Móviles: al abrir el juego sale un aviso para activar la pantalla completa (fullscreen.js); en iPhone explica cómo añadirlo a la pantalla de inicio.
 - Móviles: la interfaz usa el tamaño visible real (no 100vh), la tienda hace scroll completo con la barra inferior sólida y las cartas tienen más alto para que quepa el texto.
 - Portada: las chapas del título mantienen la proporción y se ven redondas (antes se aplanaban en pantallas bajas/móviles).
+- Móvil: comodines de la mano de la partida más pequeños; icono azul ⛶ fijo para volver a pantalla completa mientras no se esté en ella (solo móviles).

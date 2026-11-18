@@ -875,3 +875,11 @@ body.ng-on #hud-log{opacity:.12;pointer-events:none;transition:opacity .2s}
 .abx:hover{filter:brightness(1.1)}
 
 .rw-money{margin-top:6px;font:800 clamp(14px,calc(2.6*var(--vh)),20px) "Segoe UI";color:#ffd166;text-align:center}.rw-money b{font-size:1.25em;color:#fff}
+
+/* móvil: los comodines de la partida (mano) más pequeños para no tapar el campo */
+@media (pointer:coarse) and (max-height:620px){
+  .hand{gap:5px;bottom:calc(1 * var(--vh))}
+  .hc{width:clamp(56px,calc(5.8 * var(--vw)),74px);padding:4px 3px;border-width:2px;border-radius:10px;gap:1px}
+  .hc-name{font-size:10px}.hc-lv{display:none}.hc-used{font-size:11px}
+  .ehand .eh{transform:scale(.8);transform-origin:top right}
+}
