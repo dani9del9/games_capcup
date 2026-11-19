@@ -315,3 +315,4 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Estadísticas con tope 12 (también con mejoras). Reliquias: todas duran 3 partidos, con contador arriba a la derecha. Corazón ahora 💗 rosa.
 - Corazón: ahora 💙 azul (antes rosa).
 - Balón fantasma: opacidad mínima 0.1 al moverse (antes llegaba a 0).
+- Favicon con forma de chapa (favicon.svg + favicon.png) en la pestaña.
