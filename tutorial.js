@@ -305,7 +305,7 @@ const TSTEPS = [
       <li>Empiezas con <b>$15</b>. Al acabar el partido cobras: <b>victoria $5</b> o <b>empate $3</b>, <b>$1 por gol</b>, <b>$1 por cada gol de diferencia</b>, <b>$1 por cada jugador con 3 o más goles</b> y <b>$1 por no hacer faltas</b>. Los <b>combos y rebotes</b> suman más. Después se aplican las reliquias. Pasa el ratón por el dinero de los resultados para ver el desglose.</li>
       <li>Entre partido y partido entras a la <b>TIENDA</b>: compras con el dinero de la partida.</li>
       <li>Ahí hay: <b>mejoras de estadística</b> (+2 a un jugador), <b>+1 Estrella</b>, <b>cartas comodín</b>, <b>reliquias</b> y <b>habilidades</b>.</li>
-      <li>Después de ganar un partido gira la <b>🎡 RULETA</b>: 8 casillas, 6 con premio (dinero ×2 o ×1.5, comodín, reliquia o mejora GRATIS que aparecen en la tienda a $0), 1 en blanco y 1 que te quita dinero. Si empatas, otra casilla de premio pasa a blanco (2 en blanco). Si pierdes no hay ruleta.</li>
+      <li>Después de ganar un partido gira la <b>🎡 RULETA</b>: 8 casillas, 6 con premio (×2 o ×1.5 sobre el dinero que ganaste en ese partido, comodín, reliquia o mejora GRATIS que aparecen en la tienda a $0), 1 en blanco y 1 que te quita dinero. Si empatas, otra casilla de premio pasa a blanco (2 en blanco). Si pierdes no hay ruleta.</li>
       <li>Algunas reliquias dan dinero: <b>Aforo completo</b> (×2 tu dinero) y <b>Junta de accionistas</b> (+$50) se activan al comprarlas y no ocupan hueco; <b>Freestyler</b> te da $1 por cada rebote por encima de 4 en tus goles.</li>
       <li>Si no te gusta lo que hay, puedes <b>refrescar</b> la tienda por <b>$3</b>.</li>
       <li>Tienes <b>4 huecos de reliquia</b> y <b>3 de comodines</b>. Puedes <b>vender</b> una reliquia por la mitad de su precio.</li>

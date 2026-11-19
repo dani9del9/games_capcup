@@ -316,3 +316,5 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Corazón: ahora 💙 azul (antes rosa).
 - Balón fantasma: opacidad mínima 0.1 al moverse (antes llegaba a 0).
 - Favicon con forma de chapa (favicon.svg + favicon.png) en la pestaña.
+- Reliquia Guantes eliminada. Ruleta: los multiplicadores de dinero (×2, ×1.5) se aplican solo al dinero ganado en el partido.
+- Balón mini: radio 5.5 → 8 (se colaba en porterías cerradas).

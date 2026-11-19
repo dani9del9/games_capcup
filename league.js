@@ -290,8 +290,9 @@ const ROULETTE = [
 ];
 function roulettePrize(k) {
   if (k === 'x2' || k === 'x15') {
-    const add = Math.round(G.money * (k === 'x2' ? 1 : 0.5)); if (add <= 0) { gain(3); return '💰 No había dinero que multiplicar… ¡toma $3 de consuelo!'; }
-    gain(add); return `💰 ¡Tu dinero se multiplica! <b>+$${add}</b> (ahora $${G.money})`;
+    const base = Math.max(0, (M && M.result && M.result.reward) || 0);   // el multiplicador solo se aplica al dinero ganado en este partido
+    const add = Math.round(base * (k === 'x2' ? 1 : 0.5)); if (add <= 0) { gain(3); return '💰 No ganaste dinero en el partido… ¡toma $3 de consuelo!'; }
+    gain(add); return `💰 ¡El dinero del partido se multiplica! $${base} → <b>+$${add}</b> (ahora $${G.money})`;
   }
   if (k === 'lose') { const l = Math.min(G.money, Math.max(2, Math.round(G.money * 0.3))); G.money -= l; return `💸 ¡Ouch! Pierdes <b>$${l}</b> (ahora $${G.money}).`; }
   if (k === 'card') {

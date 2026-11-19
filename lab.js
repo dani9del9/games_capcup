@@ -19,7 +19,7 @@ const labOn = () => !!(G && G.lab && M);
 const labDefs = code => playerTeam(code).map(d => Object.assign({}, d, { stats: Object.assign({}, d.stats), abs: (d.abs || []).slice() }));
 
 function labMods(team) {
-  return { noAct: false, form: LAB.form[team], pot: LAB.perks.includes('hinchada') ? 1.12 : 1, gk: LAB.perks.includes('guantes') ? 3 : 0, capMen: LAB.perks.includes('brazalete') };
+  return { noAct: false, form: LAB.form[team], pot: LAB.perks.includes('hinchada') ? 1.12 : 1, gk: 0, capMen: LAB.perks.includes('brazalete') };
 }
 
 /* foto de todos los jugadores y balones justo antes de un tiro (o de un comodín) para poder repetir la jugada */

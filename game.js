@@ -424,7 +424,7 @@ function clearRun() { try { localStorage.removeItem(RUN_KEY); } catch (e) { /* n
 function loadRun() {
   try {
     // partidas guardadas con habilidades que ya no existen: Ojo de halcón pasa a Instinto goleador y Explosivo desaparece
-    const raw = (localStorage.getItem(RUN_KEY) || 'null').replace(/"halcon"/g, '"instinto"').replace(/"resbaladiza",/g, '').replace(/,"resbaladiza"/g, '').replace(/"resbaladiza"/g, '"bulldozer"').replace(/"(explosivo|congelador|efecto)",/g, '').replace(/,"(congelador|efecto)"/g, '').replace(/"(congelador|efecto)"/g, '"control"').replace(/"explosivo",/g, '').replace(/,"explosivo"/g, '').replace(/"explosivo"/g, '"instinto"');
+    const raw = (localStorage.getItem(RUN_KEY) || 'null').replace(/"halcon"/g, '"instinto"').replace(/"guantes",/g, '').replace(/,"guantes"/g, '').replace(/"guantes"/g, '').replace(/"resbaladiza",/g, '').replace(/,"resbaladiza"/g, '').replace(/"resbaladiza"/g, '"bulldozer"').replace(/"(explosivo|congelador|efecto)",/g, '').replace(/,"(congelador|efecto)"/g, '').replace(/"(congelador|efecto)"/g, '"control"').replace(/"explosivo",/g, '').replace(/,"explosivo"/g, '').replace(/"explosivo"/g, '"instinto"');
     if (/"HUN"/.test(raw)) return null;   // partida guardada con Hungría (ya no existe)
     const o = JSON.parse(raw); if (o && o.G && Array.isArray(o.G.cards)) o.G.cards = o.G.cards.filter(x => !x || !['onda', 'super'].includes(x.k)).map(x => Object.assign(x, { lv: 1 }));
     return o && o.v === 1 && o.G && o.G.caps ? o : null; } catch (e) { return null; }
@@ -473,7 +473,7 @@ function enemyHand(r) {
   return wPick(CARD_KEYS, k => CARDS[k].price, n).map(k => ({ k, lv: 1, used: false }));
 }
 function startMatch() {
-  const mods0 = { pot: hasPerk('hinchada') ? 1.12 : 1, gk: hasPerk('guantes') ? 3 : 0, form: G.form, capMen: hasPerk('brazalete') };
+  const mods0 = { pot: hasPerk('hinchada') ? 1.12 : 1, gk: 0, form: G.form, capMen: hasPerk('brazalete') };
   const defs1 = G.enemyDefs.map(d => ({ role: d.role, stats: Object.assign({}, d.stats), abs: d.abs.slice(), stars: d.stars, name: d.name, num: d.num, captain: d.captain }));
   if (hasPerk('roja')) { defs1[1 + rnd(4)] = null; }
   beginMatch({
@@ -502,7 +502,7 @@ function playFriendly() {
   const fp = P ? [P.perks[0], j2 ? P.perks[1] : []] : [[], []], has = (s, k) => fp[s].includes(k);
   const mods = s => {
     const o = { form: FR['f' + s] };
-    if (has(s, 'hinchada')) o.pot = 1.12; if (has(s, 'guantes')) o.gk = 3; if (has(s, 'brazalete')) o.capMen = true;
+    if (has(s, 'hinchada')) o.pot = 1.12; if (has(s, 'brazalete')) o.capMen = true;
     return o;
   };
   const m0 = mods(0), m1 = mods(1);

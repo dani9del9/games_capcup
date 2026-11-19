@@ -160,7 +160,6 @@ const PERKS = {
   roja:      { n: 'Tarjeta roja',    icon: '🟥', price: 16, d: 'El rival empieza con un jugador menos (nunca el portero).' },
   botas:     { n: 'Botas de oro',    icon: '👟', price: 7,  d: '+$2 por cada gol marcado.' },
   arco:      { n: 'Portería ancha',  icon: '🥅', price: 9,  d: 'La portería rival es un 25% más ancha.' },
-  guantes:   { n: 'Guantes',         icon: '🧤', price: 6,  d: 'El portero atrae el balón.' },
   prima:     { n: 'Prima de fichaje', icon: '💶', price: 8,  d: '+$4 adicionales por cada victoria.' },
   goleada:   { n: 'Prima por goleada', icon: '📈', price: 9, d: 'Al ganar, +$1 por cada gol de diferencia.' },
   multiporteros: { n: 'Multiportero', icon: '🧤', price: 9, d: 'El jugador más cercano a la portería propia crece un 30%; se recalcula cada turno.' },
@@ -497,7 +496,7 @@ function ballBody(type = 'normal') {
   if (type === 'hielo') { b.dec = 38; b.bounce = 0.96; b.m = 0.5; }
   else if (type === 'pesado') { b.m = 2.4; b.dec = 260; b.r = 15; b.bounce = 0.7; b.cb = 0.75; }
   else if (type === 'gigante') { b.r = 34; b.m = 1.8; b.dec = 150; }
-  else if (type === 'mini') { b.r = 5.5; b.m = 0.2; b.dec = 130; b.bounce = 0.92; }
+  else if (type === 'mini') { b.r = 8; b.m = 0.2; b.dec = 130; b.bounce = 0.92; }
   else if (type === 'loca') { b.dec = 150; b.ct = 0; }
   else if (type === 'tres_d') { b.fresh = true; b.air = 0; b.air0 = 1; }
   return b;
