@@ -312,3 +312,6 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Editor de equipo: rejilla ordenada, chapas con un solo color (local/visitante), bandera con tipo + nº de colores (1-5) y pickers según el nº; clic en la bandera abre el selector de ese color.
 - Vestuario (propio y rival): ya no sale el modal de info al pasar el ratón sobre un jugador.
 - Vestuario: al pasar el ratón sobre un item sale un modal pequeño que lo explica.
+- Estadísticas con tope 12 (también con mejoras). Reliquias: todas duran 3 partidos, con contador arriba a la derecha. Corazón ahora 💗 rosa.
+- Corazón: ahora 💙 azul (antes rosa).
+- Balón fantasma: opacidad mínima 0.1 al moverse (antes llegaba a 0).

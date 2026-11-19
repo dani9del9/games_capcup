@@ -154,8 +154,7 @@ function drawBall(ctx, b, shadow = true) {
   if (b.btype === 'invisible') {
     const now = performance.now(), dt = Math.min(0.1, (now - (b._it || now)) / 1000); b._it = now;
     const mv = Math.hypot(b.vx || 0, b.vy || 0) > 5;
-    b._ia = Math.max(0, Math.min(1, (b._ia == null ? 1 : b._ia) + (mv ? -2 : 5) * dt));
-    if (b._ia < 0.01) return;
+    b._ia = Math.max(0.1, Math.min(1, (b._ia == null ? 1 : b._ia) + (mv ? -2 : 5) * dt));   // nunca desaparece del todo: opacidad mínima 0.1
     ctx.save(); ctx.globalAlpha *= b._ia; drawBall0(ctx, b, shadow); ctx.restore(); return;
   }
   drawBall0(ctx, b, shadow);
@@ -393,7 +392,8 @@ const hasPerk = k => G.perks && G.perks.includes(k);
 /* reliquias por equipo: en amistoso con tienda cada jugador tiene las suyas (M.S.fp); en torneo/liga solo el equipo 0 */
 const pk = (s, k) => (M && M.S && M.S.fp) ? M.S.fp[s].includes(k) : (s === 0 && hasPerk(k));
 const FR_NOPERK = ['freestyler', 'aforo', 'junta', 'botas', 'prima', 'mecenas', 'goleada', 'pretemp'];   // reliquias de dinero: sin sentido en un amistoso
-const TEMP_PERKS = ['roja', 'ventaja'];   // reliquias que duran 2 partidos
+const PERK_LIFE = 3;   // todas las reliquias duran 3 partidos
+const perkLeft = k => (G.pu && G.pu[k] != null) ? G.pu[k] : PERK_LIFE;
 const itemSlots = () => CONFIG.itemSlots + (G.slotBonus || 0);
 const getBest = () => { try { return +localStorage.getItem('chapas_best') || 0; } catch (e) { return 0; } };
 const saveBest = n => { try { if (n > getBest()) localStorage.setItem('chapas_best', n); } catch (e) { /* nada */ } };
@@ -786,7 +786,7 @@ function runCard0(side, idx, tg, announced) {
     }
   }
   else if (k === 'motivado') {
-    const d0 = {}; STAT_KEYS.forEach(s => { const n = Math.min(12.5, tg.st[s] + lv); d0[s] = n - tg.st[s]; tg.st[s] = n; });
+    const d0 = {}; STAT_KEYS.forEach(s => { const n = Math.min(12, tg.st[s] + lv); d0[s] = n - tg.st[s]; tg.st[s] = n; });
     tg.vmax = Math.min(1500, tg.vmax * potV(tg.st.POT) / potV(tg.st.POT - d0.POT)); tg.m += massFor(tg.st.PES) - massFor(tg.st.PES - d0.PES); tg.dec += 9 * d0.PES; tg.r *= 1 + 0.012 * d0.PES; tg.dev = devFor(tg.st.PRE); tg.mot = true;
     fx.pops.push({ x: tg.x, y: tg.y - 44, txt: '✨ ¡MOTIVADO!', t: 0, col: '#ff9be8', big: 1.3 }); fx.rings.push({ x: tg.x, y: tg.y, t: 0, v: 1.4 });
   }
@@ -1102,7 +1102,7 @@ function bumpStat(b, k, d) {
   const ab = b.actB || {}, sumP = Object.keys(ab).reduce((a, x) => a + Math.max(0, ab[x]), 0), sumN = Object.keys(ab).reduce((a, x) => a + Math.min(0, ab[x]), 0);
   if (d < 0) d = Math.max(d, -1 - cur, -1 - sumN); else d = Math.max(0, Math.min(d, 1 - cur, 1 - sumP));   // en total, las mejoras (o bajadas) de un jugador no pasan de 1 punto   // la mentalidad mueve cada característica entre −1 y +1; si sube solo sube, si baja solo baja
   if (!d) return 0;
-  const n = Math.max(1, Math.min(12.5, b.st[k] + d)), real = Math.round((n - b.st[k]) * 10) / 10; if (!real) return 0;
+  const n = Math.max(1, Math.min(12, b.st[k] + d)), real = Math.round((n - b.st[k]) * 10) / 10; if (!real) return 0;
   b.st[k] = n;
   if (k === 'POT') b.vmax = Math.min(1500, b.vmax * potV(b.st.POT) / potV(b.st.POT - real));
   if (k === 'PES') { b.m += massFor(b.st.PES) - massFor(b.st.PES - real); b.dec += 9 * real; b.r *= 1 + 0.012 * real; }
@@ -1174,7 +1174,7 @@ function itemsTurnEnd(pt) {
   if (pt != null) caps.filter(b => b.team === pt).forEach(b => {
     const n = abCount(b.abs, 'corazon'); if (!n) return;
     const ks = BUMP_KEYS.filter(k => b.st[k] < 12); if (!ks.length) return;
-    const k = pick(ks), r = bumpCap(b, k, n, '❤️'); if (r) { fx.pops.push({ x: b.x, y: b.y - 44, txt: '❤️ ' + STATS[k].icon + ' +' + r, t: 0, col: '#ff7a9c', big: 1 }); }
+    const k = pick(ks), r = bumpCap(b, k, n, '💙'); if (r) { fx.pops.push({ x: b.x, y: b.y - 44, txt: '💙 ' + STATS[k].icon + ' +' + r, t: 0, col: '#6ab7ff', big: 1 }); }
   });
   if (!M.half2 && M.shots[0] + M.shots[1] <= (M.maxTurns[0] + M.maxTurns[1]) / 2) {
     M.half2 = true; M.w.half2 = true;
@@ -1646,7 +1646,7 @@ function endMatch(pens) {
       if (hasPerk('pretemp')) { const c = pick(G.caps), k = pick(STAT_KEYS); c.stats[k] = Math.min(CONFIG.statMax, c.stats[k] + 1); }
     } else { saveBest(G.round); sfx.lose(); }
   } else sfx.win();
-  if (M.run) TEMP_PERKS.forEach(k => { if (!hasPerk(k)) return; G.pu = G.pu || {}; G.pu[k] = (G.pu[k] == null ? 2 : G.pu[k]) - 1; if (G.pu[k] <= 0) { G.perks.splice(G.perks.indexOf(k), 1); delete G.pu[k]; (M.expired = M.expired || []).push(k); toast('💥 ' + PERKS[k].n + ' se ha destruido'); } });
+  if (M.run) G.perks.slice().forEach(k => { G.pu = G.pu || {}; G.pu[k] = perkLeft(k) - 1; if (G.pu[k] <= 0) { G.perks.splice(G.perks.indexOf(k), 1); delete G.pu[k]; (M.expired = M.expired || []).push(k); toast('💥 ' + PERKS[k].n + ' se ha destruido'); } });
   if (M.run) G.cards = G.cards.filter((c, i) => !(M.hands[0][i] && M.hands[0][i].used));   // las cartas usadas se gastan
   if (M.run && !runAlive()) clearRun();
   else if (M.run && !G.league && !G.tour && !win) clearRun();
@@ -2347,7 +2347,7 @@ function hudHand() {
   ee.innerHTML = eh.length ? `<div class="eh-t">🤖 COMODINES DEL RIVAL</div><div class="eh-row">` + eh.map(c => `<div class="eh ${c.used ? 'used' : ''}"><span class="eh-i">${ART[c.k]}</span><small class="eh-lv">NV ${c.lv}</small><div class="hc-tip"><b>${CARDS[c.k].n} · Nivel ${c.lv}${c.used ? ' · USADA' : ''}</b><span>${CARDS[c.k].d(c.lv)}</span></div></div>`).join('') + '</div>' : '';
 }
 const svc = v => Math.min(12, Math.max(7, Math.round(v)));
-/* mejoras de items (🎖️ ❤️ ✨ 🧛…) agrupadas por icono: [{i, v}] → suma de cada icono */
+/* mejoras de items (🎖️ 💙 ✨ 🧛…) agrupadas por icono: [{i, v}] → suma de cada icono */
 const ibSum = (ib, k) => (ib && ib[k] || []).reduce((a, x) => a + x.v, 0);
 const ibChips = (ib, k) => { const g = {}; (ib && ib[k] || []).forEach(x => { g[x.i] = Math.round(((g[x.i] || 0) + x.v) * 10) / 10; }); return Object.keys(g).filter(i => g[i]).map(i => `<small class="actb ib ${g[i] < 0 ? 'neg' : ''}">${g[i] > 0 ? '+' : '−'}${Math.abs(g[i])}${i}</small>`).join(''); };
 function hudCap() {
@@ -2367,8 +2367,8 @@ function hudCap() {
 function hudPerks() {
   const el = $('#hud-perks'); if (!el) return;
   const fp = M && M.S.fp, nm = s => (M && (M.S.j2 || fp)) ? tn(M.codes[s]) : '';
-  const one = (k, rival) => { const left = !rival && TEMP_PERKS.includes(k) ? `<em>Quedan ${(G.pu || {})[k] == null ? 2 : G.pu[k]} partidos</em>` : '';
-    return `<span class="pk${rival ? ' rv' : ''}">${PERKS[k].icon}<div class="pk-tip"><small>${rival ? '🔴 RELIQUIA DEL RIVAL' + (nm(1) ? ' · ' + nm(1) : '') : '🟢 RELIQUIA DE TU EQUIPO' + (nm(0) ? ' · ' + nm(0) : '')}</small><b>${PERKS[k].icon} ${PERKS[k].n}</b><span>${PERKS[k].d}</span>${left}</div></span>`; };
+  const one = (k, rival) => { const left = !rival ? `<em>Quedan ${perkLeft(k)} partidos</em>` : '', num = !rival && !fp ? `<i class="pkn">${perkLeft(k)}</i>` : '';
+    return `<span class="pk${rival ? ' rv' : ''}">${PERKS[k].icon}${num}<div class="pk-tip"><small>${rival ? '🔴 RELIQUIA DEL RIVAL' + (nm(1) ? ' · ' + nm(1) : '') : '🟢 RELIQUIA DE TU EQUIPO' + (nm(0) ? ' · ' + nm(0) : '')}</small><b>${PERKS[k].icon} ${PERKS[k].n}</b><span>${PERKS[k].d}</span>${left}</div></span>`; };
   const mine = (fp ? fp[0] : G.perks) || [], rv = (fp ? fp[1] : []) || [];
   el.innerHTML = mine.filter(k => PERKS[k]).map(k => one(k, false)).join('') + rv.filter(k => PERKS[k]).map(k => one(k, true)).join('');
 }
@@ -2657,7 +2657,7 @@ function renderShop(preview) {
     return `<div class="mk2 own ${G.flashCard === c.k ? 'flashc' : ''}">${cardOf(c)}<div class="hc-tip"><b>${CARDS[c.k].n}</b><span>${CARDS[c.k].d(1)}</span><em>Se gasta al usarla en el partido</em></div><div class="mk2-btns"><button class="btn small sell" data-a="cardsell" data-i="${i}">Vender +$${cardSell(c)}</button></div></div>`;
   }).join('');
   const perks = Array.from({ length: CONFIG.perkSlots }, (_, i) => G.perks[i]
-    ? `<button class="pslot on tipw" data-a="sellperk" data-i="${i}"><span>${PERKS[G.perks[i]].icon}</span><b>${PERKS[G.perks[i]].n}</b><small>${PERKS[G.perks[i]].d}</small><em>vender +$${Math.floor(PERKS[G.perks[i]].price / 2)}</em></button>`
+    ? `<button class="pslot on tipw" data-a="sellperk" data-i="${i}"><span>${PERKS[G.perks[i]].icon}</span><i class="pkn">${perkLeft(G.perks[i])}</i><b>${PERKS[G.perks[i]].n}</b><small>${PERKS[G.perks[i]].d}</small><em>vender +$${Math.floor(PERKS[G.perks[i]].price / 2)}</em></button>`
     : `<div class="pslot"><span>＋</span><small>hueco de reliquia</small></div>`).join('');
   G.flashCard = null;
   const body = tab === 'team'
@@ -2759,7 +2759,7 @@ function syncAfterShop() {
   G.caps.forEach((def, i) => {
     if (JSON.stringify(def) === JSON.stringify(old[i])) return;
     const b = M.w.bodies.find(x => x.kind === 'cap' && x.team === 0 && x.idx === i); if (!b) return;
-    const nb = capBody(def, 0, i, Object.assign({}, M.S.mods && M.S.mods[0], { noAct: true })); nb.irid = b.irid; nb.actB = b.actB; if (b.actB) Object.keys(b.actB).forEach(k => { nb.st[k] = Math.min(12.5, nb.st[k] + b.actB[k]); });
+    const nb = capBody(def, 0, i, Object.assign({}, M.S.mods && M.S.mods[0], { noAct: true })); nb.irid = b.irid; nb.actB = b.actB; if (b.actB) Object.keys(b.actB).forEach(k => { nb.st[k] = Math.min(12, nb.st[k] + b.actB[k]); });
     ['x', 'y', 'vx', 'vy', 'hx', 'hy', 'id', 'frozen', 'ang'].forEach(p => { nb[p] = b[p]; });
     Object.keys(b).forEach(p => delete b[p]); Object.assign(b, nb);
   });
@@ -2838,7 +2838,7 @@ function buy(i) {
     }   // se gasta al comprarla: no ocupa hueco de reliquia
     if (G.perks.length >= CONFIG.perkSlots) return toast('Tienes 4 reliquias: vende una (clic) para hacer hueco');
     if (G.perks.includes(it.key)) return toast('Ya tienes esa reliquia');
-    spend(price); G.perks.push(it.key); (G.pu = G.pu || {})[it.key] = 2; it.bought = true; sfx.coin(); render(); return;
+    spend(price); G.perks.push(it.key); (G.pu = G.pu || {})[it.key] = PERK_LIFE; it.bought = true; sfx.coin(); render(); return;
   }
   if (it.kind === 'item') {
     if (G.cards.length >= itemSlots()) return toast('Máximo ' + itemSlots() + ' cartas: vende una de las que tienes');

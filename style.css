@@ -934,3 +934,5 @@ body.ng-on #hud-log{opacity:.12;pointer-events:none;transition:opacity .2s}
 .my-cps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 .my-cps .my-cp{height:42px}
 .my-flag svg [data-ci]{cursor:pointer}.my-flag svg{cursor:pointer}
+.pkn{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;border-radius:10px;background:#ffd166;color:#2a1a00;font:900 13px/20px "Segoe UI",Arial;text-align:center;font-style:normal;box-shadow:0 1px 4px #000;z-index:2}
+.pk{position:relative}

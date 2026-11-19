@@ -118,7 +118,7 @@ const ABILITIES = {
   hierro:      { n: 'Salud de hierro', icon: '🩹', price: 6, d: 'No le afectan el hielo ni el veneno. 1 copia: durante la primera mitad del partido. 2: durante todo el partido. 3: a todo el equipo durante todo el partido.' },
   diamante:    { n: 'Diamante',     icon: '💎', price: 12, d: 'Los goles de este jugador dan más dinero: +$1 con 1 copia, +$2 con 2 y +$4 con 3.' },
   demonio:     { n: 'Demonio',      icon: '😈', price: 10, d: 'Cuando le llega un balón tocado por el rival, tira solo a la portería rival. Dispersión: 30% con 1 copia, 20% con 2 y 5% con 3.' },
-  corazon:     { n: 'Corazón',      icon: '❤️', price: 12, d: 'Cada turno mejora una estadística al azar: +1 con 1 copia, +2 con 2 y +3 con 3. Se reinicia al acabar el partido.' },
+  corazon:     { n: 'Corazón',      icon: '💙', price: 12, d: 'Cada turno mejora una estadística al azar: +1 con 1 copia, +2 con 2 y +3 con 3. Se reinicia al acabar el partido.' },
   vampiro:     { n: 'Vampiro',      icon: '🧛', price: 10, d: 'Si choca con un jugador rival antes de tocar el balón, le resta una estadística al azar: −1 con 1 copia, −2 con 2 y −3 con 3. Se reinicia al acabar el partido.' },
   goat:        { n: 'GOAT',         icon: '🐐', price: 14, d: 'Un 10% de probabilidad de jugar el partido con todo a 12. Con 2 copias, 30%; con 3, 50% y el balón siempre va a portería.' },
   arana:       { n: 'Araña',        icon: '🕷️', price: 9, d: 'Durante la jugada del rival se desplaza sola hacia el balón, siempre que esté a menos de 3 veces su tamaño.' },
@@ -131,7 +131,7 @@ function hierroOn(w, b) {
 }
 /* mejora (o resta) una estadística de un jugador durante el partido y lo anota para enseñarlo en su ficha: src = icono del item */
 function bumpCap(b, k, d, src) {
-  const o = b.st[k], n = clamp(Math.round((o + d) * 10) / 10, 1, 12.5), real = Math.round((n - o) * 10) / 10; if (!real) return 0;
+  const o = b.st[k], n = clamp(Math.round((o + d) * 10) / 10, 1, 12), real = Math.round((n - o) * 10) / 10; if (!real) return 0;
   b.st[k] = n;
   if (k === 'POT') b.vmax = Math.min(1500, b.vmax * potV(n) / potV(o));
   if (k === 'PES') { b.m += massFor(n) - massFor(o); b.dec += 9 * real; b.r *= 1 + 0.012 * real; }
@@ -157,7 +157,7 @@ const PERKS = {
   vaina:     { n: 'Seguro de autogoles', icon: '🛡️', price: 9, d: 'Los goles en propia puerta no cuentan durante los 5 primeros turnos de cada partido.' },
   regalo:    { n: 'Regalo del rival', icon: '🎁', price: 9, d: 'Los autogoles del rival valen doble.' },
   golazo:    { n: 'Golazo',          icon: '🌠', price: 10, d: 'Los goles marcados desde el propio campo valen doble.' },
-  roja:      { n: 'Tarjeta roja',    icon: '🟥', price: 16, d: 'El rival empieza con un jugador menos (nunca el portero). Dura 2 partidos.' },
+  roja:      { n: 'Tarjeta roja',    icon: '🟥', price: 16, d: 'El rival empieza con un jugador menos (nunca el portero).' },
   botas:     { n: 'Botas de oro',    icon: '👟', price: 7,  d: '+$2 por cada gol marcado.' },
   arco:      { n: 'Portería ancha',  icon: '🥅', price: 9,  d: 'La portería rival es un 25% más ancha.' },
   guantes:   { n: 'Guantes',         icon: '🧤', price: 6,  d: 'El portero atrae el balón.' },
@@ -175,7 +175,7 @@ const PERKS = {
   visor:     { n: 'Visor láser',     icon: '🔭', price: 7,  d: 'Ves un 40% más de la trayectoria al apuntar.' },
   pretemp:   { n: 'Pretemporada',    icon: '🏋️', price: 11, d: 'Tras cada victoria, una estadística al azar sube +1.' },
   guardian:  { n: 'Portero guardián', icon: '🧤', price: 14, d: 'El portero regresa solo a su posición inicial al terminar cada jugada, durante todo el partido.' },
-  ventaja:   { n: 'Ventaja de oro',  icon: '🏆', price: 18, d: 'El partido empieza 1-0 a favor. Dura 2 partidos y después se destruye.' },
+  ventaja:   { n: 'Ventaja de oro',  icon: '🏆', price: 18, d: 'El partido empieza 1-0 a favor.' },
   teatrero:  { n: 'Teatrero', icon: '🎭', price: 9, d: 'Si un jugador rival golpea a uno de los tuyos antes de tocar el balón, se señala falta a tu favor.' },
   brazalete: { n: 'Brazalete de capitán', icon: '🎖️', price: 12, d: 'El capitán tiene siempre mentalidad 12.' },
 };
@@ -427,7 +427,7 @@ function massFor(p) { return 1.2 + 0.15 * p + 0.06 * Math.pow(Math.max(0, p - 5)
 function capBody(def, team, i, mods) {
   const has0 = k => (def.abs || []).includes(k);
   const R = ROLES.find(r => r.k === def.role), abs = def.abs || [], stars = def.stars || 1, st = {};
-  STAT_KEYS.forEach(k => { st[k] = Math.min(12.5, def.stats[k]); });
+  STAT_KEYS.forEach(k => { st[k] = Math.min(12, def.stats[k]); });
   if (mods && mods.capMen && def.captain) st.MEN = 12;   // reliquia Brazalete
   // MENTALIDAD: a partir de 7, CADA característica tiene su propia probabilidad de subir hasta +1 (con un decimal)
   let irid = false, actB = null, goat = false;
@@ -438,7 +438,7 @@ function capBody(def, team, i, mods) {
   }
   if (goat) { /* GOAT: sin mejoras de mentalidad */ }
   else if (mods && mods.fixAct !== undefined) {   // laboratorio: mejoras de mentalidad ya tiradas (se reutilizan hasta que se pida recalcular)
-    if (mods.fixAct) { actB = {}; Object.keys(mods.fixAct).forEach(k => { st[k] = Math.min(12.5, st[k] + mods.fixAct[k]); actB[k] = mods.fixAct[k]; if (mods.fixAct[k] > 0) irid = true; }); }
+    if (mods.fixAct) { actB = {}; Object.keys(mods.fixAct).forEach(k => { st[k] = Math.min(12, st[k] + mods.fixAct[k]); actB[k] = mods.fixAct[k]; if (mods.fixAct[k] > 0) irid = true; }); }
   } else if (mods && !mods.noAct && st.MEN < 5) {
     // mentalidad baja (menos de 5): pierde algo de estadísticas en total (valor al azar), repartido entre sus características: hasta 0.5 con 1-2, 0.4 con 3, 0.3 con 4
     let left = Math.round(Math.random() * (st.MEN < 3 ? 5 : st.MEN < 4 ? 4 : 3)) / 10;
@@ -456,7 +456,7 @@ function capBody(def, team, i, mods) {
       const sw = wts.reduce((a, b) => a + b, 0); let rest = T;
       ks.forEach((k, i) => {
         let g = i === ks.length - 1 ? rest : Math.round(wts[i] / sw * T * 10) / 10; g = Math.min(g, rest);
-        const n = Math.min(12.5, st[k] + g), real = Math.round((n - st[k]) * 10) / 10;
+        const n = Math.min(12, st[k] + g), real = Math.round((n - st[k]) * 10) / 10;
         if (real > 0) { st[k] = n; (actB = actB || {})[k] = real; irid = true; }
         rest = Math.round((rest - g) * 10) / 10;
       });
@@ -465,7 +465,7 @@ function capBody(def, team, i, mods) {
     let left = Math.round(Math.random() * capG * 10) / 10;
     ['POT', 'PES', 'PRE', 'VIS'].sort(() => Math.random() - 0.5).forEach(k => {
       if (left >= 0.1 && Math.random() < p) {
-        const g = Math.min(left, Math.round((0.3 + Math.random() * 0.7) * 10) / 10), n = Math.min(12.5, st[k] + g), real = Math.round((n - st[k]) * 10) / 10;
+        const g = Math.min(left, Math.round((0.3 + Math.random() * 0.7) * 10) / 10), n = Math.min(12, st[k] + g), real = Math.round((n - st[k]) * 10) / 10;
         if (real > 0) { st[k] = n; (actB = actB || {})[k] = real; irid = true; left = Math.round((left - real) * 10) / 10; }
       }
     });
