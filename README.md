@@ -318,3 +318,11 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - Favicon con forma de chapa (favicon.svg + favicon.png) en la pestaña.
 - Reliquia Guantes eliminada. Ruleta: los multiplicadores de dinero (×2, ×1.5) se aplican solo al dinero ganado en el partido.
 - Balón mini: radio 5.5 → 8 (se colaba en porterías cerradas).
+- Salud de hierro reduce el drenaje del Vampiro (1 punto por copia; con igual nivel lo anula) y su descripción lo indica.
+- Leirado (LRD) → GlobiColegas (GLO): jugadores Pady, LegenDRay, GuinK, Œ Dani, AleXMan98; estadísticas 6 y mentalidad 12; bandera y camiseta #bb8ecf.
+- GlobiColegas: mentalidad 9 en todos; portero AleXMan98, Pady (7, extremo) y Œ Dani (9, delantero).
+- Bandera de GlobiColegas: globo rojo en el centro sobre fondo #bb8ecf.
+- GlobiColegas: formación exclusiva 1-4 (línea de cuatro, solo ellos); globos de colores suben por el campo al marcar; globo del escudo más pequeño.
+- GlobiColegas: estadísticas a 5 (mentalidad 9 en todos).
+- Cuadro del campeonato: resultados del grupo ordenados (por jornada, dos líneas por partido, sin desbordar). Tienda: si el jugador no tiene hueco, pasa el ratón por uno de sus items y pulsa para cambiarlo por el comprado.
+- Panel «✨ EFECTOS ACTIVOS» bajo el marcador: los comodines con efecto en turnos siguientes (gol invertido, invertido, viento, etc.) se ven grandes y claros durante todo el partido.

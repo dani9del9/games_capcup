@@ -248,7 +248,7 @@ function renderTour() {
     }).join('');
     main = `<div class="tb-cols" style="grid-template-columns:repeat(${T.nr},1fr)!important">${cols}</div>`;
   }
-  const myRes = T.groups ? T.G[0].res.map((r, d) => r.map(m => `<div class="lg-m ${m.me ? 'me' : ''}"><span class="a">${nm(m.a)}</span>${flagSVG(m.a)}<b>${m.ga} - ${m.gb}</b>${flagSVG(m.b)}<span class="b">${nm(m.b)}</span></div>`).join('')).join('') : '';
+  const myRes = T.groups ? T.G[0].res.map((r, d) => `<div class="lg-d">Jornada ${d + 1}</div>` + r.map(m => `<div class="lg-g ${m.me ? 'me' : ''}">${flagSVG(m.a)}<span class="${m.ga > m.gb ? 'w' : ''}">${nm(m.a)}</span><b class="${m.ga > m.gb ? 'w' : ''}">${m.ga}</b>${flagSVG(m.b)}<span class="${m.gb > m.ga ? 'w' : ''}">${nm(m.b)}</span><b class="${m.gb > m.ga ? 'w' : ''}">${m.gb}</b></div>`).join('')).join('') : '';
   const side = `${tab === 'grp' && myRes ? `<div class="lg-t">TU GRUPO · RESULTADOS</div>${myRes}` : ''}<div class="lg-t">⚽ GOLEADORES</div>${sc.length ? sc.map((s, i) => `<div class="lg-s ${s.code === G.code ? 'me' : ''}"><span>${i + 1}</span>${flagSVG(s.code)}<em>${s.name}</em><b>${s.goals}</b></div>`).join('') : '<div class="mut lg-none">Aún no hay goles</div>'}`;
   const status = T.champion ? '¡Eres el campeón!' : T.simDone ? 'Torneo simulado · Campeón: ' + nm(T.simChamp) : T.over ? (T.groups && !T.rounds[0] ? 'Eliminado en grupos' : 'Has sido eliminado') : tab === 'grp' ? 'Se clasifican los 2 primeros de cada grupo' : 'Eliminatoria a partido único · los otros resultados salen al acabar tu partido';
   const simB = T.over && !T.simDone && !T.champion ? '<button class="btn big pur" data-a="tsim">⏩ SIMULAR</button>' : '';

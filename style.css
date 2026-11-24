@@ -936,3 +936,28 @@ body.ng-on #hud-log{opacity:.12;pointer-events:none;transition:opacity .2s}
 .my-flag svg [data-ci]{cursor:pointer}.my-flag svg{cursor:pointer}
 .pkn{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;border-radius:10px;background:#ffd166;color:#2a1a00;font:900 13px/20px "Segoe UI",Arial;text-align:center;font-style:normal;box-shadow:0 1px 4px #000;z-index:2}
 .pk{position:relative}
+/* resultados del grupo: filas ordenadas, sin desbordar */
+.lg-side{overflow-x:hidden}
+.lg-m{grid-template-columns:minmax(0,1fr) 24px 56px 24px minmax(0,1fr);background:rgba(255,255,255,.05);margin-bottom:3px}
+.lg-m .a,.lg-m .b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lg-m .b{text-align:left}
+.lg-m .flag{width:24px;height:16px;justify-self:center}
+.lg-m b{white-space:nowrap;font-size:1.05em}
+.lg-m.me{background:rgba(198,255,61,.16)}
+.lg-d{font:800 11px "Segoe UI";letter-spacing:.12em;color:var(--mut);text-transform:uppercase;margin:6px 4px 3px}
+.fut.swappable{border-color:#ffd166}
+.fut.swappable .abslot.swp{cursor:pointer;outline:2px dashed #ffd166;outline-offset:1px;position:relative}
+.fut.swappable .abslot.swp:hover{background:rgba(255,209,102,.28)}
+.fut.swappable .abslot.swp:hover::after{content:"🔁 CAMBIAR";position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);background:#ffd166;color:#2a1a00;font:900 12px "Segoe UI";padding:3px 8px;border-radius:8px;white-space:nowrap;z-index:5;pointer-events:none}
+.lg-g{display:grid;grid-template-columns:24px minmax(0,1fr) 30px;grid-auto-rows:26px;align-items:center;column-gap:8px;background:rgba(255,255,255,.05);border-radius:10px;padding:3px 8px;margin-bottom:5px;font:700 clamp(13px,calc(2.1 * var(--vh)),16px) "Segoe UI"}
+.lg-g.me{background:rgba(198,255,61,.16);outline:1px solid rgba(198,255,61,.45)}
+.lg-g .flag{width:24px;height:16px;border-radius:3px}
+.lg-g span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut)}
+.lg-g b{text-align:center;color:var(--mut)}
+.lg-g .w{color:#fff}.lg-g b.w{color:var(--gold)}
+
+/* efectos de comodines activos, bien visibles bajo el marcador */
+.hudfx{position:absolute;left:50%;top:calc(calc(1.4 * var(--vh)) + 84px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none;max-width:60vw;z-index:5}
+.hudfx:empty{display:none}
+.hudfx .fx-h{font:800 clamp(11px,calc(1.7 * var(--vh)),13px) "Segoe UI",Arial;letter-spacing:.14em;color:#c9b6ff;text-shadow:0 1px 3px #000}
+.hudfx .fx-i{font:800 clamp(14px,calc(2.4 * var(--vh)),20px) "Segoe UI",Arial;color:#fff;background:rgba(40,16,70,.88);border:2px solid #b07bff;border-radius:12px;padding:5px 14px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.5)}

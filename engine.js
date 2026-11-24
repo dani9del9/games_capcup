@@ -58,7 +58,7 @@ const COUNTRIES = {
   GHA: { n: 'Ghana', c1: '#ffffff', c2: '#ce1126', bias: { POT: 1, VIS: 1 }, tag: 'Estrellas Negras', svg: H3('#ce1126', '#fcd116', '#006b3f') + '<path d="M15 6.5l1.2 3.4h3.6l-2.9 2.1 1.1 3.4-3-2.1-3 2.1 1.1-3.4-2.9-2.1h3.6z" fill="#111"/>' },
   SCO: { n: 'Escocia', c1: '#0a4aa0', c2: '#ffffff', bias: { PES: 1, POT: 1 }, tag: 'Tartan Army', svg: '<rect width="30" height="20" fill="#0065bd"/><path d="M0 0L30 20M30 0L0 20" stroke="#fff" stroke-width="3.2"/>' },
   UCR: { n: 'Ucrania', c1: '#ffd700', c2: '#0057b7', bias: { PRE: 1, VIS: 1 }, tag: 'Azul y amarillo', svg: '<rect width="30" height="10" fill="#0057b7"/><rect y="10" width="30" height="10" fill="#ffd700"/>' },
-  LRD: { n: 'Leirado', c1: '#2ad4b8', c2: '#1a9c88', bias: { POT: -1, PES: -1, PRE: -1, VIS: -1 }, allStat: 3, men: 10, abs3: 'arana', tag: 'El peor equipo del mundo', svg: '<rect width="30" height="20" fill="#2ad4b8"/>' },
+  GLO: { n: 'GlobiColegas', c1: '#bb8ecf', c2: '#bb8ecf', bias: {}, allStat: 5, men: 9, abs3: 'arana', names: ['AleXMan98', 'LegenDRay', 'GuinK', 'Pady', 'Œ Dani'], tag: 'Los colegas de Globi', svg: '<rect width="30" height="20" fill="#bb8ecf"/><path d="M15 12.1q-1.2 1.6 0 2.6t0 2.4" stroke="#fff" stroke-width=".4" fill="none"/><ellipse cx="15" cy="8.6" rx="3.2" ry="3.8" fill="#e11d2e"/><path d="M15 12.2l-.8 1.1h1.6z" fill="#e11d2e"/><ellipse cx="13.8" cy="7.2" rx=".8" ry="1.3" fill="#fff" opacity=".45" transform="rotate(20 13.8 7.2)"/>' },
   CMR: { n: 'Camerún', c1: '#00a35a', c2: '#fcd116', bias: { POT: 2 }, tag: 'Leones Indomables', svg: V3('#007a5e', '#ce1126', '#fcd116') + '<path d="M15 6.5l1.2 3.4h3.6l-2.9 2.1 1.1 3.4-3-2.1-3 2.1 1.1-3.4-2.9-2.1h3.6z" fill="#fcd116"/>' },
   PER: { n: 'Perú', c1: '#d91023', c2: '#ffffff', bias: { PRE: 1, PES: 1 }, tag: 'La Blanquirroja', svg: V3('#d91023', '#fff', '#d91023') },
   AUS: { n: 'Australia', c1: '#ffcd00', c2: '#00843d', bias: { PES: 1, VIS: 1 }, tag: 'Socceroos', svg: '<rect width="30" height="20" fill="#00247d"/><path d="M0 0L13 8M13 0L0 8" stroke="#fff" stroke-width="1.6"/><circle cx="21" cy="11" r="1.6" fill="#fff"/><circle cx="24" cy="5" r="1.4" fill="#fff"/><circle cx="24" cy="16" r="1.4" fill="#fff"/><circle cx="18" cy="16" r="1.4" fill="#fff"/>' },
@@ -115,11 +115,11 @@ const ABILITIES = {
   control:     { n: 'Control de balón', icon: '🛑', price: 8, d: 'Para el balón en seco cuando le llega (de un pase o de un tiro rival). 1 copia: el jugador se mueve hacia donde lo empuja el golpe. 2 copias: se mueve con la mitad de fuerza. 3 copias: el jugador no se mueve.' },
   motiv:       { n: 'Motivado',     icon: '✨', price: 8, d: 'Durante la segunda mitad del partido sube todas sus estadísticas: +1 con 1 copia, +2 con 2 y +3 con 3.' },
   piedra:      { n: 'Piedra',       icon: '⚪', price: 9, d: 'Resiste los golpes del balón y de otros jugadores: con 1 copia se mueve poco, con 2 muy poco y con 3 no se mueve. Solo se desplaza cuando tira.' },
-  hierro:      { n: 'Salud de hierro', icon: '🩹', price: 6, d: 'No le afectan el hielo ni el veneno. 1 copia: durante la primera mitad del partido. 2: durante todo el partido. 3: a todo el equipo durante todo el partido.' },
+  hierro:      { n: 'Salud de hierro', icon: '🩹', price: 6, d: 'No le afectan el hielo ni el veneno. 1 copia: durante la primera mitad del partido. 2: durante todo el partido. 3: a todo el equipo durante todo el partido. Además el Vampiro le afecta menos: cada copia le quita 1 punto al drenaje.' },
   diamante:    { n: 'Diamante',     icon: '💎', price: 12, d: 'Los goles de este jugador dan más dinero: +$1 con 1 copia, +$2 con 2 y +$4 con 3.' },
   demonio:     { n: 'Demonio',      icon: '😈', price: 10, d: 'Cuando le llega un balón tocado por el rival, tira solo a la portería rival. Dispersión: 30% con 1 copia, 20% con 2 y 5% con 3.' },
   corazon:     { n: 'Corazón',      icon: '💙', price: 12, d: 'Cada turno mejora una estadística al azar: +1 con 1 copia, +2 con 2 y +3 con 3. Se reinicia al acabar el partido.' },
-  vampiro:     { n: 'Vampiro',      icon: '🧛', price: 10, d: 'Si choca con un jugador rival antes de tocar el balón, le resta una estadística al azar: −1 con 1 copia, −2 con 2 y −3 con 3. Se reinicia al acabar el partido.' },
+  vampiro:     { n: 'Vampiro',      icon: '🧛', price: 10, d: 'Si choca con un jugador rival antes de tocar el balón, le resta una estadística al azar: −1 con 1 copia, −2 con 2 y −3 con 3. Se reinicia al acabar el partido. La Salud de hierro del rival reduce el drenaje.' },
   goat:        { n: 'GOAT',         icon: '🐐', price: 14, d: 'Un 10% de probabilidad de jugar el partido con todo a 12. Con 2 copias, 30%; con 3, 50% y el balón siempre va a portería.' },
   arana:       { n: 'Araña',        icon: '🕷️', price: 9, d: 'Durante la jugada del rival se desplaza sola hacia el balón, siempre que esté a menos de 3 veces su tamaño.' },
 };
@@ -248,7 +248,6 @@ const NAME_POOLS = {
   POL: [['Robart', 'Wojcioch', 'Piator', 'Jakab', 'Arkadiasz', 'Metty', 'Sebastian', 'Nicolo'], ['Lewandawsky', 'Szczęsni-Nowak', 'Zielińsko-Wójcik', 'Kiwiar-Kamiński', 'Malik-Lewicki', 'Cesh-Dąbrowski', 'Szymeński', 'Zalewsko-Kozioł']],
   SCO: [['Callan', 'Euan', 'Fraser', 'Angus', 'Lachlan', 'Murray', 'Cameron', 'Rory'], ['MacRae', 'Sinclair', 'Buchanan', 'Gillespie', 'Drummond', 'Menzies', 'Laidlaw', 'Cochrane']],
   UCR: [['Bohdan', 'Danylo', 'Mykyta', 'Yaroslav', 'Maksym', 'Roman', 'Zakhar', 'Ostap'], ['Kovalenko', 'Shevchuk', 'Tkachenko', 'Melnyk', 'Havrylyuk', 'Petrenko', 'Lysenko', 'Bondar']],
-  LRD: [['Lei', 'Rado', 'Leiro', 'Radi', 'Leirin', 'Rodo', 'Lero', 'Dado'], ['Leirado', 'Del Rado', 'Leirez', 'Radoso', 'Leirón', 'Radina', 'Leiradez', 'Lerado']],
   CMR: [['Brice', 'Serge', 'Fabrice', 'Yannick', 'Jérémie', 'Cédric', 'Rodrigue', 'Aurélien'], ['Mbarga', 'Kamga', 'Ebeng', 'Fomba', 'Ngassa', 'Essomba', 'Tchatchoua', 'Biyik']],
   PER: [['Diego', 'Piero', 'Álvaro', 'Marcos', 'Jhonatan', 'Rodrigo', 'Joao', 'Anderson'], ['Huamán', 'Cárdenas', 'Salazar', 'Mendívil', 'Ccopa', 'Valdivia', 'Chumpitaz', 'Callirgos']],
   AUS: [['Jack', 'Lachie', 'Riley', 'Mitchell', 'Jurdan', 'Brodie', 'Flynn', 'Hayden'], ['Pearce', 'Whitlock', 'Garrity', 'McAllister', 'Kershaw', 'Treloar', 'Banfield', 'Dunmore']],
@@ -298,14 +297,17 @@ const FORMS = {
   '1-3':   { n: 'Ataque',     d: 'Un defensa y tres arriba.',            p: [[0.2, 0.5], [0.39, 0.2], [0.39, 0.5], [0.39, 0.8]] },
   '1-2-1': { n: 'Rombo',      d: 'Centro reforzado: favorece pases y relevos.',       p: [[0.18, 0.5], [0.3, 0.24], [0.3, 0.76], [0.4, 0.5]] },
   '2-1-1': { n: 'Pirámide',   d: 'Dos atrás, un enlace y un punta.',     p: [[0.2, 0.28], [0.2, 0.72], [0.31, 0.5], [0.4, 0.5]] },
+  '1-4':   { n: 'Línea',      d: 'Los cuatro jugadores en una sola línea. Exclusiva de GlobiColegas.', only: 'GLO', p: [[0.3, 0.14], [0.3, 0.38], [0.3, 0.62], [0.3, 0.86]] },
   '1-1-2': { n: 'Clásica',    d: 'Formación clásica con dos delanteros.',           p: [[0.2, 0.5], [0.31, 0.5], [0.39, 0.22], [0.39, 0.78]] },
 };
-const FORM_KEYS = Object.keys(FORMS);
+const FORM_KEYS = Object.keys(FORMS).filter(k => !FORMS[k].only);   // formaciones que puede elegir cualquier equipo
+const formKeysFor = code => Object.keys(FORMS).filter(k => !FORMS[k].only || FORMS[k].only === code);   // + la exclusiva de ese equipo
 const TEAM_FORM = { ESP: '2-2', FRA: '1-3', ITA: '3-1', ALE: '1-2-1', BRA: '1-3', ARG: '2-1-1', ING: '1-1-2', POR: '2-1-1', PBA: '1-2-1', BEL: '2-2', JPN: '2-2', MEX: '1-1-2', CRO: '2-1-1', SUE: '3-1', COL: '1-3', USA: '1-1-2',
   URU: '3-1', MAR: '2-2', COR: '1-2-1', SUI: '3-1', DIN: '2-2', TUR: '1-3', NOR: '1-3', SEN: '2-1-1', POL: '3-1', EGI: '1-3', NIG: '1-3', CHI: '2-1-1', AUT: '1-2-1', GHA: '2-2', SCO: '1-2-1', UCR: '2-1-1', CMR: '1-3', PER: '3-1', AUS: '2-2', CHN: '2-2', IRL: '1-1-2', GRE: '3-1', THA: '1-2-1', CAN: '1-3', CIV: '1-3', SMR: '3-1', PAR: '3-1',
   MCI: '1-2-1', ARS: '2-2', LIV: '1-3', CHE: '2-1-1', MUN: '1-1-2', TOT: '2-2', BAR: '1-2-1', RMA: '1-3', ATM: '3-1', CEL: '2-1-1', VAL: '1-1-2', SEV: '2-2',
   INT: '3-1', NAP: '1-3', JUV: '3-1', MIL: '2-1-1', ROM: '2-2', ATA: '1-3', PSG: '1-3', MON: '2-2', OLM: '1-1-2', LYO: '1-2-1', LIL: '2-2', NIC: '1-1-2',
   BAY: '1-3', LEV: '1-2-1', BVB: '2-1-1', RBL: '1-3', SGE: '2-2', VFB: '1-2-1' };
+TEAM_FORM.GLO = '1-4';
 const teamForm = code => TEAM_FORM[code] || '1-1-2';
 /* posiciones (fracción del campo) de los 5 jugadores: portero + 4 ordenados de atrás hacia delante */
 function formSlots(id) {
@@ -350,7 +352,7 @@ function makeCap(role, code, boost = 0) {
   const captain = role === 'MED';   // cada equipo tiene un capitán: el mediocentro (+1 Mentalidad)
   if (captain) stats.MEN = clamp(stats.MEN + 1, 1, 12);
   const ri = ROLES.findIndex(r => r.k === role);
-  if (COUNTRIES[code].allStat) { STAT_KEYS.forEach(s => { stats[s] = COUNTRIES[code].allStat; }); if (COUNTRIES[code].men) stats.MEN = COUNTRIES[code].men; return { role, captain, stats, abs: COUNTRIES[code].abs3 ? [COUNTRIES[code].abs3, COUNTRIES[code].abs3, COUNTRIES[code].abs3] : [], name: playerName(code, ri), num: SHIRT[role], stars: 1 }; }
+  if (COUNTRIES[code].allStat) { STAT_KEYS.forEach(s => { stats[s] = COUNTRIES[code].allStat; }); if (COUNTRIES[code].men) stats.MEN = COUNTRIES[code].men; return { role, captain, stats, abs: COUNTRIES[code].abs3 ? [COUNTRIES[code].abs3, COUNTRIES[code].abs3, COUNTRIES[code].abs3] : [], name: (COUNTRIES[code].names && COUNTRIES[code].names[ri]) || playerName(code, ri), num: SHIRT[role], stars: 1 }; }
   return { role, stats, abs: [], name: playerName(code, ri), num: SHIRT[role], stars, captain };
 }
 // todo equipo (salvo los de nivel fijo) tiene al menos un jugador «normalito tirando a bueno» (media 6)

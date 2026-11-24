@@ -73,7 +73,7 @@ const AWAY = {
   POL:['#dc143c','#ffffff'],EGI:['#ffffff','#c8102e'],NIG:['#ffffff','#008751'],CHI:['#0039a6','#ffffff'],AUT:['#0a2a5e','#ed2939'],GHA:['#fcd116','#006b3f'],SCO:['#ffd24a','#0a4aa0'],UCR:['#0057b7','#ffd700'],
   CAN:['#ffffff','#d52b1e'],CIV:['#ffffff','#f77f00'],SMR:['#1b3a8a','#5eb6e4'],PAR:['#0038a8','#ffffff'],
   CMR:['#fcd116','#00a35a'],PER:['#ffffff','#d91023'],AUS:['#00843d','#ffcd00'],CHN:['#ffde00','#de2910'],IRL:['#ffffff','#169b62'],GRE:['#ffffff','#0d5eaf'],THA:['#e3262e','#2b3a8c'],
-  LRD:['#ffffff','#2ad4b8'],
+  GLO:['#ffffff','#bb8ecf'],
   MCI:['#1c1c28','#6cabdd'],ARS:['#f4e04d','#ef0107'],LIV:['#111111','#00b2a9'],RMA:['#2a1a5e','#febe10'],BAR:['#f2c500','#a50044'],ATM:['#101a3a','#cb3524'],INT:['#ffffff','#0068a8'],NAP:['#ffffff','#12a0d7'],
   JUV:['#2a4aa0','#ffffff'],PSG:['#ffffff','#004170'],MON:['#111111','#e0202c'],OLM:['#111111','#2faee0'],BAY:['#1a1a3a','#dc052d'],LEV:['#ffffff','#e32221'],BVB:['#111111','#fde100'],CHE:['#ffffff','#034694'],
   MUN:['#ffffff','#da291c'],TOT:['#132257','#ffffff'],CEL:['#1a2a5e','#8ac3ee'],VAL:['#111111','#ff8a00'],SEV:['#111a3a','#d4001f'],MIL:['#ffffff','#fb090b'],ROM:['#ffffff','#8e1f2f'],ATA:['#ffffff','#1e71b8'],
@@ -381,7 +381,7 @@ let M = null;            // estado del partido
 let cv, cx, view = { S: 1, ox: 0, oy: 0, dpr: 1 }, pitchCache = null, pitchKey = '';
 const CHG_COL = ['#fff', '#fff3a0', '#ffc23d', '#ff7a2d', '#ff3d9e', '#35e0ff', '#b56bff'];
 const chgCol = n => CHG_COL[n > 5 ? 6 : n];
-const fx = { conf: [], rings: [], trail: [], pops: [], arcs: [], bars: [], dust: [], shake: 0, slow: 0 };
+const fx = { balloons: [], conf: [], rings: [], trail: [], pops: [], arcs: [], bars: [], dust: [], shake: 0, slow: 0 };
 let FR = { kind: 'match', money: [0, 0], cards: false, f0: '2-2', f1: '1-3', c0: 'ESP', c1: 'BRA', lg0: 'SEL', lg1: 'SEL', mode: 'cpu', diff: 1, field: 'normal', ballType: 'normal', nBalls: 1, turns: 10 };
 
 const money = () => G.debug ? '∞' : '$' + G.money;
@@ -424,7 +424,7 @@ function clearRun() { try { localStorage.removeItem(RUN_KEY); } catch (e) { /* n
 function loadRun() {
   try {
     // partidas guardadas con habilidades que ya no existen: Ojo de halcón pasa a Instinto goleador y Explosivo desaparece
-    const raw = (localStorage.getItem(RUN_KEY) || 'null').replace(/"halcon"/g, '"instinto"').replace(/"guantes",/g, '').replace(/,"guantes"/g, '').replace(/"guantes"/g, '').replace(/"resbaladiza",/g, '').replace(/,"resbaladiza"/g, '').replace(/"resbaladiza"/g, '"bulldozer"').replace(/"(explosivo|congelador|efecto)",/g, '').replace(/,"(congelador|efecto)"/g, '').replace(/"(congelador|efecto)"/g, '"control"').replace(/"explosivo",/g, '').replace(/,"explosivo"/g, '').replace(/"explosivo"/g, '"instinto"');
+    const raw = (localStorage.getItem(RUN_KEY) || 'null').replace(/"halcon"/g, '"instinto"').replace(/"LRD"/g, '"GLO"').replace(/"guantes",/g, '').replace(/,"guantes"/g, '').replace(/"guantes"/g, '').replace(/"resbaladiza",/g, '').replace(/,"resbaladiza"/g, '').replace(/"resbaladiza"/g, '"bulldozer"').replace(/"(explosivo|congelador|efecto)",/g, '').replace(/,"(congelador|efecto)"/g, '').replace(/"(congelador|efecto)"/g, '"control"').replace(/"explosivo",/g, '').replace(/,"explosivo"/g, '').replace(/"explosivo"/g, '"instinto"');
     if (/"HUN"/.test(raw)) return null;   // partida guardada con Hungría (ya no existe)
     const o = JSON.parse(raw); if (o && o.G && Array.isArray(o.G.cards)) o.G.cards = o.G.cards.filter(x => !x || !['onda', 'super'].includes(x.k)).map(x => Object.assign(x, { lv: 1 }));
     return o && o.v === 1 && o.G && o.G.caps ? o : null; } catch (e) { return null; }
@@ -553,7 +553,7 @@ function shootoutKick(team, ok) {
   const so = M.so, W = FIELD.W;
   so.kicks[team].push(ok); so.next = 1 - team; M.pen = null; M.phase = 'wait';
   if (ok) {
-    M.score[team]++; M.goals[team]++; so.sc[team]++; sfx.goal(); fx.shake = 0.4;
+    M.score[team]++; M.goals[team]++; so.sc[team]++; sfx.goal(); fx.shake = 0.4; goalBalloons(team);
     banner('¡GOOOL!', tn(M.codes[team]), 1300, M.human[team] ? 'good' : 'bad');
     for (let i = 0; i < 60; i++) fx.conf.push({ x: team === 0 ? W - 20 : 20, y: FIELD.H / 2 + (Math.random() - 0.5) * 120, vx: (Math.random() - 0.5) * 800 + (team === 0 ? -400 : 400), vy: (Math.random() - 0.5) * 800, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 12, c: pick(['#c6ff3d', '#35e0ff', '#ffd166', '#ff4d6d', '#fff']), life: 1.4 + Math.random() });
   } else banner('🧤 ¡PARADA!', 'Falla ' + tn(M.codes[team]), 1300);
@@ -579,7 +579,7 @@ function beginMatch(S) {
     boostId: null, picking: null, touched: true, playTeam: null, pen: null, penAward: null, keepTurn: false, grass: { pat: rnd(7), col: rnd(6) }, gkHome: S.fp ? [S.fp[0].includes('guardian') ? 999 : 0, S.fp[1].includes('guardian') ? 999 : 0] : [hasPerk('guardian') && S.run ? 999 : 0, 0], open: [0, 0], star: null, homing: null, rec: null, replay: null, gw: [FIELD.gw, S.gwR],
     hands: S.hands || [[], []], play: null, cash: 0, tipCap: null, lastGoalVal: 0, so: null,
   };
-  fx.conf = []; fx.rings = []; fx.trail = []; fx.pops = []; fx.arcs = []; fx.shake = 0; fx.slow = 0;
+  fx.conf = []; fx.balloons = []; fx.rings = []; fx.trail = []; fx.pops = []; fx.arcs = []; fx.shake = 0; fx.slow = 0;
   pitchKey = '';
   G.screen = 'match';
   render(); resize();
@@ -1447,6 +1447,12 @@ function drawPenMeter() {
   cx.restore();
 }
 
+/* GlobiColegas: al marcar gol suben globos de colores por el campo */
+function goalBalloons(team) {
+  if (!M || M.codes[team] !== 'GLO') return;
+  const cols = ['#e11d2e', '#ffd23f', '#35c8ff', '#7ee86a', '#ff7ac8', '#ff9a2e', '#ffffff', '#9b6bff'];
+  for (let i = 0; i < 34; i++) fx.balloons.push({ x: 40 + Math.random() * (FIELD.W - 80), y: FIELD.H + 30 + Math.random() * 260, vy: -(150 + Math.random() * 170), ph: Math.random() * 6.28, sw: 14 + Math.random() * 22, r: 15 + Math.random() * 9, c: pick(cols), life: 6 });
+}
 function goalScored() {
   const g = M.w.goal; let s = g.scorer;
   const ng = M.ng; M.ng = null; if (ng && ng.inv) { s = 1 - s; g.scorer = s; }
@@ -1508,7 +1514,7 @@ function goalScored() {
   M.phase = 'goal'; M.seq++; M.pen = null; M.penAward = null; M.immune = [false, false]; M.extra = [0, 0]; M.lockPlays = [0, 0]; M.w.lock = [false, false];
   fx.shake = 0.5;
   for (let i = 0; i < 70 + 30 * Math.min(4, combo); i++) fx.conf.push({ x: g.x < 0 ? 20 : FIELD.W - 20, y: FIELD.H / 2 + (Math.random() - 0.5) * 120, vx: (Math.random() - 0.5) * 900 + (g.x < 0 ? 400 : -400), vy: (Math.random() - 0.5) * 900, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 14, c: pick(['#c6ff3d', '#35e0ff', '#ffd166', '#ff4d6d', '#fff']), life: 1.6 + Math.random() });
-  sfx.goal();
+  sfx.goal(); goalBalloons(s);
   goalFx(own ? '¡GOL EN PROPIA!' : val > 1 ? '¡GOLAZO ×' + val + '!' : (combo >= 1 ? '¡GOL COMBO ×' + combo + '!' : '¡GOOOL!'), tn(M.codes[s]) + (cash ? '  ·  +$' + cash : ''), s === 0 || M.S.j2 || own, own);
   hudScore();
   const mySeq = M.seq;
@@ -1788,7 +1794,10 @@ function update(dt) {
           const vm = A1.team === M.playTeam ? A1 : B1, vc = vm === A1 ? B1 : A1, nV = abCount(vm.abs, 'vampiro'), key = vm.id + '>' + vc.id;
           M.vamp = M.vamp || {};
           if (nV && !M.vamp[key]) {
-            M.vamp[key] = 1; const k = pick(BUMP_KEYS.filter(q => vc.st[q] > 1)); const r = k ? bumpCap(vc, k, -nV, '🧛') : 0;
+            M.vamp[key] = 1;
+            const nH = hierroOn(M.w, vc) ? (M.w.bodies.some(c => c.kind === 'cap' && c.team === vc.team && abCount(c.abs, 'hierro') >= 3) ? 3 : abCount(vc.abs, 'hierro')) : 0, loss = nV - nH;   // salud de hierro: cada copia reduce 1 punto el drenaje
+            if (loss <= 0) { fx.pops.push({ x: vc.x, y: vc.y - 44, txt: '🩹 ¡Inmune!', t: 0, col: '#7fe3a0', big: 1.1 }); }
+            const k = loss > 0 ? pick(BUMP_KEYS.filter(q => vc.st[q] > 1)) : null; const r = k ? bumpCap(vc, k, -loss, '🧛') : 0;
             if (r) { fx.pops.push({ x: vc.x, y: vc.y - 44, txt: '🧛 ' + STATS[k].icon + ' ' + r, t: 0, col: '#ff5a7a', big: 1.2 }); logEv('🧛', `<b>${vm.name}</b> drena a <b>${vc.name}</b>: ${STATS[k].n} ${r}`); hudCap(); }
           }
         }
@@ -1848,6 +1857,8 @@ function update(dt) {
   fx.dust.forEach(p => { p.t += dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.96; p.vy *= 0.96; }); fx.dust = fx.dust.filter(p => p.t < p.life);
   fx.conf.forEach(c => { c.x += c.vx * dt; c.y += c.vy * dt; c.vy += 600 * dt; c.vx *= 0.985; c.rot += c.vr * dt; c.life -= dt; });
   fx.conf = fx.conf.filter(c => c.life > 0);
+  fx.balloons.forEach(b => { b.y += b.vy * dt; b.ph += dt * 2.2; b.life -= dt; });
+  fx.balloons = fx.balloons.filter(b => b.life > 0 && b.y > -60);
   if (fx.shake > 0) fx.shake -= dt;
 }
 
@@ -1947,6 +1958,16 @@ function draw(dt) {
     if (c.coin) { cx.fillStyle = '#ffd166'; cx.strokeStyle = '#a56a00'; cx.lineWidth = 2; cx.beginPath(); cx.ellipse(0, 0, 7, 7 * Math.abs(Math.cos(c.life * 9)) + 1, 0, 0, Math.PI * 2); cx.fill(); cx.stroke(); }
     else if (c.spark) { cx.fillStyle = c.c; cx.beginPath(); cx.arc(0, 0, 3, 0, Math.PI * 2); cx.fill(); }
     else { cx.rotate(c.rot); cx.fillStyle = c.c; cx.fillRect(-5, -3, 10, 6); }
+    cx.restore();
+  });
+  // globos de GlobiColegas
+  fx.balloons.forEach(b => {
+    const x = b.x + Math.sin(b.ph) * b.sw;
+    cx.save(); cx.translate(x, b.y); cx.globalAlpha = Math.min(1, b.life);
+    cx.strokeStyle = 'rgba(255,255,255,.75)'; cx.lineWidth = 1.5; cx.beginPath(); cx.moveTo(0, b.r * 1.25); cx.quadraticCurveTo(Math.sin(b.ph + 1) * 6, b.r * 2, 0, b.r * 2.8); cx.stroke();
+    cx.fillStyle = b.c; cx.beginPath(); cx.ellipse(0, 0, b.r * 0.85, b.r, 0, 0, Math.PI * 2); cx.fill();
+    cx.beginPath(); cx.moveTo(0, b.r * 1.2); cx.lineTo(-3, b.r * 1.5); cx.lineTo(3, b.r * 1.5); cx.closePath(); cx.fill();
+    cx.fillStyle = 'rgba(255,255,255,.4)'; cx.beginPath(); cx.ellipse(-b.r * 0.3, -b.r * 0.35, b.r * 0.2, b.r * 0.38, 0.4, 0, Math.PI * 2); cx.fill();
     cx.restore();
   });
   drawPops();
@@ -2279,6 +2300,7 @@ function matchTags() {
   return t;
 }
 function hudScore() {
+  hudFx();
   const el = $('#hud-score'); if (!el || !M) return;
   const hm = $('#hud-money'); if (hm) hm.innerHTML = M.run ? '💰 <b>' + (G.debug ? '∞' : '$' + (G.money + (M.cash || 0))) + '</b>' + (M.cash ? '<small>+$' + M.cash + ' este partido</small>' : '') : '';
   const rb = $('#hud-roul'); if (rb) { rb.style.display = M.run && !M.so ? '' : 'none'; rb.disabled = !(M.phase === 'aim' && M.human[M.turn]); }
@@ -2302,10 +2324,13 @@ function soMarks() {
   return `<div class="sb-turns so"><span class="dots l">${row(0)}</span><em>${M.phase === 'pen' ? '🥅 PENALTI' : ''}</em><span class="dots r">${row(1)}</span></div>`;
 }
 function statusHTML() {
-  if (!M.hands[0].length && !M.hands[1].length && !M.buffs.length) return '';
-  const st = [], me = handSide(), op = 1 - me;
+  const st = [];
   if (M.picking) st.push('👆 ' + PICK_HELP[M.picking.k]);
   if (M.boostId != null) st.push('💪 Supertiro preparado');
+  return st.map(x => `<div class="mut st">${x}</div>`).join('');
+}
+function fxList() {
+  const st = [], me = handSide(), op = 1 - me;
   for (const t of [0, 1]) { const nm = M.S.j2 ? tn(M.codes[t]) + ': ' : '';
     if (M.rkick && M.rkick[t] > 0) st.push('💀 ' + nm + 'pase de la muerte (' + M.rkick[t] + ')');
     if (M.blind && M.blind[t] > 0) st.push('🕶️ ' + nm + 'ceguera (' + M.blind[t] + ')');
@@ -2326,14 +2351,20 @@ function statusHTML() {
     if (M.windLeft[t] > 0) st.push('🌬️ ' + nm + 'viento ×' + M.windLeft[t]);
     if (M.pardon[t] > 0) st.push('😇 ' + nm + 'perdón ×' + M.pardon[t]);
     if (M.rush && M.rush[t]) st.push('🔥 ' + nm + 'arreón final (últimos ' + M.rush[t] + ' turnos ×2)');
-    if (t === 0 && M.ng) st.push('🎲 próximo gol ' + (M.ng.mul > 1 ? '×' + M.ng.mul : '') + (M.ng.inv ? ' para el contrario' : ''));
+    if (t === 0 && M.ng) st.push(M.ng.inv ? '🔄 GOL INVERTIDO: el próximo gol cuenta para el otro equipo' + (M.ng.mul > 1 ? ' (×' + M.ng.mul + ')' : '') : '🎲 PRÓXIMO GOL ×' + M.ng.mul);
     if (M.gold[t] && M.gold[t].left > 0) st.push('🌟 ' + nm + 'gol de oro ×' + M.gold[t].mul + ' (' + M.gold[t].left + ')');
     if (M.gw[t] < FIELD.gw - 1) st.push('🥅 ' + nm + 'mini portería');
   }
   (M.sent || []).forEach(x => st.push('🟨 ' + (x.team === 0 ? '' : 'Rival: ') + x.b.name + ' expulsado ×' + x.left));
   M.buffs.forEach(b => st.push(b.name + ' · ' + (b.left > 99 ? 'todo el partido' : b.left + ' jug.')));
-  return st.map(x => `<div class="mut st">${x}</div>`).join('');
+  return st;
 }
+function hudFx() {
+  const el = $('#hud-fx'); if (!el || !M || M.so) { if (el) el.innerHTML = ''; return; }
+  const l = fxList();
+  el.innerHTML = l.length ? '<div class="fx-h">✨ EFECTOS ACTIVOS</div>' + l.map(x => `<div class="fx-i">${x}</div>`).join('') : '';
+}
+
 function hudHand() {
   const el = $('#hud-hand'); if (!el || !M) return;
   if (M.lab && typeof labHave === 'function') labHave();
@@ -2351,6 +2382,7 @@ const svc = v => Math.min(12, Math.max(7, Math.round(v)));
 const ibSum = (ib, k) => (ib && ib[k] || []).reduce((a, x) => a + x.v, 0);
 const ibChips = (ib, k) => { const g = {}; (ib && ib[k] || []).forEach(x => { g[x.i] = Math.round(((g[x.i] || 0) + x.v) * 10) / 10; }); return Object.keys(g).filter(i => g[i]).map(i => `<small class="actb ib ${g[i] < 0 ? 'neg' : ''}">${g[i] > 0 ? '+' : '−'}${Math.abs(g[i])}${i}</small>`).join(''); };
 function hudCap() {
+  hudFx();
   const el = $('#hud-cap'); if (!el || !M) return;
   let c = M.sel != null ? capById(M.sel) : null;
   const inPlay = false;
@@ -2490,7 +2522,7 @@ function teamSel(side) {
       <div class="ft-info"><h3>${C.n}</h3><div class="ft-ovr">MEDIA <b class="sv sv${svc(ovr / 10)}">${ovr}</b></div><button class="btn small" data-a="frpick" data-side="${side}">🔄 Cambiar equipo</button><button class="btn small ghost" data-a="squad" data-c="${code}">👥 Ver jugadores</button></div>
     </div>
     <div class="ft-bars">${statBars(o)}</div>
-    ${FR.kind === 'pens' ? '' : `<div class="ft-forms">${FORM_KEYS.map(k => `<button class="fchip ${FR['f' + side] === k ? 'on' : ''}" data-a="frform" data-side="${side}" data-v="${k}" title="${FORMS[k].n}">${formSVG(k)}<b>${k}</b></button>`).join('')}</div>`}
+    ${FR.kind === 'pens' ? '' : `<div class="ft-forms">${formKeysFor(FR['c' + side]).map(k => `<button class="fchip ${FR['f' + side] === k ? 'on' : ''}" data-a="frform" data-side="${side}" data-v="${k}" title="${FORMS[k].n}">${formSVG(k)}<b>${k}</b></button>`).join('')}</div>`}
   </div>`;
 }
 let SQ_LIST = [];
@@ -2559,7 +2591,7 @@ function renderVersus() {
       <div class="v-mut ${G.field !== 'normal' ? 'crazy' : ''}"><span>${FIELDS[G.field].icon}</span><b>${FIELDS[G.field].n}</b><em>${FIELDS[G.field].d}</em></div>
       <div class="v-mut ${G.ballType !== 'normal' || G.nBalls > 1 ? 'crazy' : ''}"><span>${BALLS[G.ballType].icon}${G.nBalls > 1 ? '×' + G.nBalls : ''}</span><b>Balón ${BALLS[G.ballType].n}${G.nBalls > 1 ? ' · ' + G.nBalls + ' balones' : ''}</b><em>${BALLS[G.ballType].d}</em></div>
     </div>
-    <div class="v-form"><span>TU FORMACIÓN <small>(se mantiene entre partidos)</small></span>${FORM_KEYS.map(k => `<button class="fchip ${G.form === k ? 'on' : ''}" data-a="form" data-v="${k}" title="${FORMS[k].d}">${formSVG(k)}<b>${k}</b><small>${FORMS[k].n}</small></button>`).join('')}<em class="mut vs-form">Rival (${COUNTRIES[G.enemy].n}): ${formSVG(teamForm(G.enemy))}<b>${teamForm(G.enemy)}</b> ${FORMS[teamForm(G.enemy)].n}</em></div>
+    <div class="v-form"><span>TU FORMACIÓN <small>(se mantiene entre partidos)</small></span>${formKeysFor(G.code).map(k => `<button class="fchip ${G.form === k ? 'on' : ''}" data-a="form" data-v="${k}" title="${FORMS[k].d}">${formSVG(k)}<b>${k}</b><small>${FORMS[k].n}</small></button>`).join('')}<em class="mut vs-form">Rival (${COUNTRIES[G.enemy].n}): ${formSVG(teamForm(G.enemy))}<b>${teamForm(G.enemy)}</b> ${FORMS[teamForm(G.enemy)].n}</em></div>
     <div class="row"><button class="btn big" data-a="play">¡A JUGAR!</button><button class="btn big alt" data-a="myteam">👕 MI VESTUARIO</button><button class="btn big gold" data-a="tienda">🛒 TIENDA</button><button class="btn big alt" data-a="rival">👁 VESTUARIO RIVAL</button>${tourOn() ? '<button class="btn big pur" data-a="tourview">🏆 CUADRO</button>' : ''}${G.league ? '<button class="btn big pur" data-a="lgview">📊 CLASIFICACIÓN</button>' : ''}</div>
     <div class="v-money">Dinero ${money()} · Partidos ganados ${G.stats.wins}</div>
   </div>`;
@@ -2628,7 +2660,8 @@ function renderShop(preview) {
   const cards = G.caps.map((c, i) => {
     const R = ROLES[i];
     const fl = G.flash === i;
-    return `<div class="fut ${c.captain ? 'iscap' : ''} ${pend && (pend.kind === 'star' ? (c.stars || 1) < 5 : pend.kind === 'stat' ? c.stats[pend.key] < CONFIG.statMax : c.abs.length < abSlots(c.stars || 1) && abCount(c.abs, pend.key) < AB_MAX) ? 'pending' : ''} ${fl ? 'flash' : ''}" data-tipi="${i}" ${pend ? `data-a="apply" data-i="${i}"` : ''}>
+    const swap = !!pend && pend.kind !== 'star' && pend.kind !== 'stat' && c.abs.length >= abSlots(c.stars || 1) && c.abs.length > 0;   // sin hueco: se puede cambiar uno de sus items
+    return `<div class="fut ${swap ? 'swappable' : ''} ${c.captain ? 'iscap' : ''} ${pend && (pend.kind === 'star' ? (c.stars || 1) < 5 : pend.kind === 'stat' ? c.stats[pend.key] < CONFIG.statMax : c.abs.length < abSlots(c.stars || 1) && abCount(c.abs, pend.key) < AB_MAX) ? 'pending' : ''} ${fl ? 'flash' : ''}" data-tipi="${i}" ${pend && !swap ? `data-a="apply" data-i="${i}"` : ''}>
       <div class="fut-top"><div class="ovr sv sv${svc(capOvr(c) / 10)}">${capOvr(c)}</div><div class="role">${R.k}</div>${flagSVG(G.code, 'sm')}</div>
       ${capPreview(i, kit, 34)}
       <div class="fut-name">${c.name}</div>${c.captain ? '<div class="capband">🎖️ CAPITÁN · +1 MEN</div>' : ''}<div class="fut-role">${R.n}</div>
@@ -2636,7 +2669,7 @@ function renderShop(preview) {
       <div class="fut-abs">${Array.from({ length: 3 }, (_, j) => {
         const slots = Math.max(abSlots(c.stars || 1), c.abs.length), k = c.abs[j];
         if (j >= slots) return `<div class="abslot locked" title="Se desbloquea con ${j === 1 ? '3' : '5'} estrellas">🔒<small>${j === 1 ? '3' : '5'}★</small></div>`;
-        if (k) return `<div class="abslot on" data-itip="${k}"><i>${ABILITIES[k].icon}</i><small>${ABILITIES[k].n}</small>${pend ? '' : `<button class="abx" data-a="rmab" data-i="${i}" data-j="${j}" title="Vender habilidad por $${Math.floor(ABILITIES[k].price / 2)}">+$${Math.floor(ABILITIES[k].price / 2)}</button>`}</div>`;
+        if (k) return `<div class="abslot on ${swap && abCount(c.abs, pend.key) - (k === pend.key ? 1 : 0) < AB_MAX && k !== pend.key ? 'swp' : ''}" data-itip="${k}" ${swap && k !== pend.key && abCount(c.abs, pend.key) < AB_MAX ? `data-a="swapab" data-i="${i}" data-j="${j}"` : ''}><i>${ABILITIES[k].icon}</i><small>${ABILITIES[k].n}</small>${pend ? '' : `<button class="abx" data-a="rmab" data-i="${i}" data-j="${j}" title="Vender habilidad por $${Math.floor(ABILITIES[k].price / 2)}">+$${Math.floor(ABILITIES[k].price / 2)}</button>`}</div>`;
         return `<div class="abslot empty" title="Hueco libre: compra una habilidad"><i>＋</i><small>libre</small></div>`;
       }).join('')}</div>
       <div class="fut-stats">${STAT_KEYS.map(k => {
@@ -2686,7 +2719,7 @@ function renderShop(preview) {
 
 function renderMatch() {
   return `<div class="hud">
-    <div id="hud-score" class="scoreboard"></div><div id="hud-money" class="hudmoney"></div><div id="hud-log" class="hudlog"></div><button id="hud-roul" class="shopbtn roulbtn" data-a="mroul" title="Ruleta: apuesta de $1 a $5 por un premio">🎡 RULETA</button><button id="hud-shop" class="shopbtn" data-a="mshop" title="Abrir la tienda en pleno partido (en pleno partido todo cuesta el doble)">🛒 TIENDA</button>
+    <div id="hud-score" class="scoreboard"></div><div id="hud-money" class="hudmoney"></div><div id="hud-log" class="hudlog"></div><div id="hud-fx" class="hudfx"></div><button id="hud-roul" class="shopbtn roulbtn" data-a="mroul" title="Ruleta: apuesta de $1 a $5 por un premio">🎡 RULETA</button><button id="hud-shop" class="shopbtn" data-a="mshop" title="Abrir la tienda en pleno partido (en pleno partido todo cuesta el doble)">🛒 TIENDA</button>
     <div class="topr"><div id="hud-perks"></div><button class="btn ghost mini" data-a="menu">☰</button></div>
     <div id="hud-cap" class="capcard"></div>
     <div id="hud-hand" class="hand"></div><div id="hud-ehand" class="ehand"></div>
@@ -2863,7 +2896,7 @@ function apply(i) {
     upgradeFx(cp, { kind: 'stat', key: pd.key, from, to: cp.stats[pd.key] }); return;
   }
   if (abCount(cp.abs, pd.key) >= AB_MAX) return toast('Máximo 3 copias de la misma habilidad');
-  if (cp.abs.length >= abSlots(cp.stars || 1)) return toast('Sin huecos: sube de estrella (3★ y 5★) o quita una habilidad ✕');
+  if (cp.abs.length >= abSlots(cp.stars || 1)) return toast('Sin huecos: sube de estrella (3★ y 5★), quita una habilidad ✕ o pasa el ratón por una de sus habilidades para cambiarla');
   spend(pd.price); cp.abs.push(pd.key); G.shop.items[pd.idx].bought = true; G.pending = null; G.flash = i; G.shopTab = 'market';
   sfx.coin(); render(); upgradeFx(cp, { kind: 'ab', key: pd.key });
 }
@@ -2968,6 +3001,13 @@ const ACTIONS = {
   toshop() { G.shopTab = 'market'; document.querySelectorAll('.overlay:not(#help)').forEach(o => o.remove()); M = null; G.round++; nextEnemy(); G.screen = 'shop'; genShop(); G.reward = null; render(); },
   buy(el) { buy(+el.dataset.i); },
   apply(el) { apply(+el.dataset.i); },
+  swapab(el) {   // sin huecos: cambia un item del jugador por el que acabas de comprar
+    const pd = G.pending, i = +el.dataset.i, j = +el.dataset.j; if (!pd) return;
+    if (!afford(pd.price)) { G.pending = null; return render(); }
+    const cp = G.caps[i], old = cp.abs[j]; if (!old) return;
+    spend(pd.price); cp.abs[j] = pd.key; G.shop.items[pd.idx].bought = true; G.pending = null; G.flash = i; G.shopTab = 'market';
+    toast('🔁 ' + ABILITIES[old].n + ' → ' + ABILITIES[pd.key].n); sfx.coin(); render(); upgradeFx(cp, { kind: 'ab', key: pd.key });
+  },
   cancel() { G.pending = null; render(); },
   star(el) { starUp(+el.dataset.i); },
   stab(el) { G.shopTab = el.dataset.k; render(); sfx.click(); },
