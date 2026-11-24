@@ -49,7 +49,7 @@ function startLab(keepDefs, keepPos) {
   ['goalbar', 'replaybar', 'pause'].forEach(i => { const e = document.getElementById(i); if (e) e.remove(); });
   if (M) { M.seq++; clearTimeout(M.goalTimer); }
   if (!keepDefs || !LAB.defs) LAB.defs = [labDefs(LAB.c0), labDefs(LAB.c1)];
-  LAB.defs.forEach((t, k) => t.forEach(d => { d.captain = d.role === 'MED'; }));
+  LAB.defs.forEach((t, k) => t.forEach(d => { d.captain = (k === 0 ? LAB.c0 : LAB.c1) === 'GLO' ? d.role === 'EXT' : d.role === 'MED'; }));
   G = { screen: 'match', mode: 'friendly', lab: true, debug: false, money: 0, code: LAB.c0, enemy: LAB.c1, caps: [], perks: LAB.perks, cards: [], round: 0, stats: { goals: 0, wins: 0 } };
   const d1 = LAB.defs[1].slice();
   LAB.rojaIdx = null; if (LAB.perks.includes('roja')) { LAB.rojaIdx = 1 + rnd(4); d1[LAB.rojaIdx] = null; }

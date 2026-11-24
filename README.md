@@ -326,3 +326,4 @@ Arrastra una chapa hacia atrás y suelta. Clic derecho cancela el tiro. ESPACIO 
 - GlobiColegas: estadísticas a 5 (mentalidad 9 en todos).
 - Cuadro del campeonato: resultados del grupo ordenados (por jornada, dos líneas por partido, sin desbordar). Tienda: si el jugador no tiene hueco, pasa el ratón por uno de sus items y pulsa para cambiarlo por el comprado.
 - Panel «✨ EFECTOS ACTIVOS» bajo el marcador: los comodines con efecto en turnos siguientes (gol invertido, invertido, viento, etc.) se ven grandes y claros durante todo el partido.
+- GlobiColegas: el capitán es Pady (extremo) y AleXMan98 (portero) lleva el dorsal 98.

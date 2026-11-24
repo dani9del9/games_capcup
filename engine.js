@@ -349,10 +349,10 @@ function makeCap(role, code, boost = 0) {
   else if (!COUNTRIES[code].allStat) {   // sin ajustes a mano: cada jugador tiene su propio perfil (determinista por equipo y posición)
     const d = playerSpread(code, role); STAT_KEYS.forEach((s, i) => { stats[s] = clamp(stats[s] + d[i], 1, 12); });
   }
-  const captain = role === 'MED';   // cada equipo tiene un capitán: el mediocentro (+1 Mentalidad)
+  const captain = code === 'GLO' ? role === 'EXT' : role === 'MED';   // GlobiColegas: el capitán es Pady (extremo)   // cada equipo tiene un capitán: el mediocentro (+1 Mentalidad)
   if (captain) stats.MEN = clamp(stats.MEN + 1, 1, 12);
   const ri = ROLES.findIndex(r => r.k === role);
-  if (COUNTRIES[code].allStat) { STAT_KEYS.forEach(s => { stats[s] = COUNTRIES[code].allStat; }); if (COUNTRIES[code].men) stats.MEN = COUNTRIES[code].men; return { role, captain, stats, abs: COUNTRIES[code].abs3 ? [COUNTRIES[code].abs3, COUNTRIES[code].abs3, COUNTRIES[code].abs3] : [], name: (COUNTRIES[code].names && COUNTRIES[code].names[ri]) || playerName(code, ri), num: SHIRT[role], stars: 1 }; }
+  if (COUNTRIES[code].allStat) { STAT_KEYS.forEach(s => { stats[s] = COUNTRIES[code].allStat; }); if (COUNTRIES[code].men) stats.MEN = COUNTRIES[code].men; return { role, captain, stats, abs: COUNTRIES[code].abs3 ? [COUNTRIES[code].abs3, COUNTRIES[code].abs3, COUNTRIES[code].abs3] : [], name: (COUNTRIES[code].names && COUNTRIES[code].names[ri]) || playerName(code, ri), num: code === 'GLO' && role === 'POR' ? 98 : SHIRT[role], stars: 1 }; }
   return { role, stats, abs: [], name: playerName(code, ri), num: SHIRT[role], stars, captain };
 }
 // todo equipo (salvo los de nivel fijo) tiene al menos un jugador «normalito tirando a bueno» (media 6)
